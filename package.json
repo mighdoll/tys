@@ -4,8 +4,8 @@
   "main": "dist/tys.js",
   "description": "Run typescript scripts faster with cached compilation.",
   "dependencies": {
-    "glob": "^7.1.6",
-    "config-ts": "^0.0.1"
+    "config-ts": "../config-ts/dist",
+    "glob": "^7.1.6"
   },
   "files": [
     "dist"
@@ -14,6 +14,7 @@
     "tys": "dist/tys.js"
   },
   "devDependencies": {
+    "@types/glob": "^7.1.1",
     "@types/node": "^13.9.1",
     "rollup": "^2.2.0",
     "rollup-plugin-terser": "^5.3.0",
