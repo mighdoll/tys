@@ -4,7 +4,7 @@
   "main": "dist/tys.js",
   "description": "Run typescript scripts faster with cached compilation.",
   "dependencies": {
-    "config-ts": "../config-ts/dist",
+    "config-ts": "../config-ts",
     "glob": "^7.1.6"
   },
   "files": [

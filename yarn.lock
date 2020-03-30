@@ -115,8 +115,11 @@ concat-map@0.0.1:
   resolved "https://registry.yarnpkg.com/concat-map/-/concat-map-0.0.1.tgz#d8a96bd77fd68df7793a73036a3ba0d5405d477b"
   integrity sha1-2Klr13/Wjfd5OnMDajug1UBdR3s=
 
-config-ts@../config-ts/dist:
-  version "0.0.0"
+config-ts@../config-ts:
+  version "0.0.1"
+  dependencies:
+    glob "^7.1.6"
+    typescript "^3.8.3"
 
 escape-string-regexp@^1.0.5:
   version "1.0.5"
