@@ -1,7 +1,7 @@
 /**
  * Configuration options for tys. 
  */
-export interface TysConfig {
+export default interface TysConfig {
   /** typescript file to compile */
   tsFile: string, 
 
