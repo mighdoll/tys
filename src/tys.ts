@@ -12,15 +12,17 @@ import {
 import { logExec } from "./execUtil";
 import TysConfig from "./TysConfig";
 import { once } from "events";
+import yargs from "yargs";
 
 const defaultConfig = "tys.config.ts";
 
 const defaultOutDir = ".build"; // for the tys users compiled output
 
-tysArgv([]);
+tysArgv(process.argv);
 
 async function tysArgv(argv: string[]): Promise<number> {
-  const config = loadTsConfig<TysConfig>(defaultConfig) || process.exit(1);
+  const params = parseArgs(argv);
+  const config = getConfig(params);
   const { tsFile, otherTsFiles, outDir, command } = config;
 
   const sources = [tsFile, ...otherSources(otherTsFiles)];
@@ -31,6 +33,46 @@ async function tysArgv(argv: string[]): Promise<number> {
   compileIfNecessary(sources, realOutDir) || process.exit(1);
   const proc = logExec(fullCommand, "");
   const [result] = await once(proc, "exit");
+  return result;
+}
+
+interface Arguments {
+  config?: string;
+  tsFile?: string;
+  _: string[]
+}
+
+function getConfig(params: Arguments): TysConfig {
+  const {config, tsFile} = params;
+  if (config) {
+    return loadTsConfig<TysConfig>(config) || process.exit(1);
+  } else if (tsFile) {
+    console.log("found tsFile", tsFile);
+    return {
+      tsFile
+    };
+  } else {
+    return loadTsConfig<TysConfig>(defaultConfig) || process.exit(1);
+  }
+}
+
+// TODO add option for command to run
+// TODO add option for src files
+// TODO add option for outDir
+// TODO add option for -- to pass to cmd
+
+function parseArgs(argv: string[]): Arguments {
+  const result = yargs
+    .option("config", {
+      alias: "c",
+      describe: "tys configuration file",
+      default: defaultConfig
+    })
+    .usage("$0 tsFile \n$0 -c [tysConfigFile]")
+    .help()
+    .parse(argv);
+  console.log("parsed args", result);
+  
   return result;
 }
 

@@ -9,5 +9,5 @@ export default {
     banner: "#!/usr/bin/env node"
   },
   plugins: [typescript2()],
-  external: ["fs", "path", "events", "child_process", "config-file-ts", "glob"]
+  external: ["fs", "path", "events", "child_process", "config-file-ts", "glob", "yargs"]
 };
