@@ -8,14 +8,13 @@ import { logExec } from "./execUtil";
 import { TysConfig } from "./TysConfig";
 
 const defaultConfig = "tys.config.ts";
-const configOutDir = ".tys.build"; // for the tys.config.js file
 
 const defaultOutDir = ".build"; // for the tys users compiled output
 
 run();
 
 async function run() {
-  const config = loadTsConfig<TysConfig>(defaultConfig, configOutDir) || process.exit(1);
+  const config = loadTsConfig<TysConfig>(defaultConfig) || process.exit(1);
   const { tsFile, otherTsFiles, outDir, command } = config;
 
   const sources = [tsFile, ...otherSources(otherTsFiles)];
