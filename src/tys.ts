@@ -3,17 +3,23 @@
 //
 
 import glob from "glob";
-import { compileIfNecessary, jsOutFile, loadTsConfig, expectFilesExist } from "config-file-ts";
+import {
+  compileIfNecessary,
+  jsOutFile,
+  loadTsConfig,
+  expectFilesExist
+} from "config-file-ts";
 import { logExec } from "./execUtil";
-import { TysConfig } from "./TysConfig";
+import TysConfig from "./TysConfig";
+import { once } from "events";
 
 const defaultConfig = "tys.config.ts";
 
 const defaultOutDir = ".build"; // for the tys users compiled output
 
-run();
+tysArgv([]);
 
-async function run() {
+async function tysArgv(argv: string[]): Promise<number> {
   const config = loadTsConfig<TysConfig>(defaultConfig) || process.exit(1);
   const { tsFile, otherTsFiles, outDir, command } = config;
 
@@ -23,7 +29,9 @@ async function run() {
 
   expectFilesExist([tsFile]) || process.exit(1);
   compileIfNecessary(sources, realOutDir) || process.exit(1);
-  return logExec(fullCommand, "");
+  const proc = logExec(fullCommand, "");
+  const [result] = await once(proc, "exit");
+  return result;
 }
 
 function otherSources(otherTsGlobs: string[] | undefined): string[] {
@@ -41,6 +49,12 @@ function commandToRun(tsFile: string, realOutDir: string, command?: string) {
   const jsPath = jsOutFile(tsFile, realOutDir);
   const realCmd = command || `node ${jsPath}`;
   return `${realCmd} ${cmdArgs}`;
+}
+
+export async function tysCommandLine(cmdLine: string): Promise<number> {
+  const args = cmdLine.split(/\s+/);
+  args.unshift("tys");
+  return tysArgv(args);
 }
 
 export { TysConfig };
