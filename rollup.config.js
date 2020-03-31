@@ -15,5 +15,5 @@ export default {
     }),
     // rollupTerser() // minify step. Comment this out to review bundle contents
   ],
-  external: ["fs", "path", "events", "child_process", "config-ts", "glob"],
+  external: ["fs", "path", "events", "child_process", "config-file-ts", "glob"],
 };

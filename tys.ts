@@ -3,7 +3,7 @@
 //
 
 import glob from "glob";
-import { compileIfNecessary, jsOutFile, loadTsConfig, expectFilesExist } from "config-ts";
+import { compileIfNecessary, jsOutFile, loadTsConfig, expectFilesExist } from "config-file-ts";
 import { logExec } from "./execUtil";
 import { TysConfig } from "./TysConfig";
 

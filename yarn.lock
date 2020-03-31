@@ -115,8 +115,10 @@ concat-map@0.0.1:
   resolved "https://registry.yarnpkg.com/concat-map/-/concat-map-0.0.1.tgz#d8a96bd77fd68df7793a73036a3ba0d5405d477b"
   integrity sha1-2Klr13/Wjfd5OnMDajug1UBdR3s=
 
-config-ts@../config-ts:
-  version "0.0.1"
+config-file-ts@^0.1.5:
+  version "0.1.5"
+  resolved "https://registry.yarnpkg.com/config-file-ts/-/config-file-ts-0.1.5.tgz#053be1f6932187230db9fd459f48dcec3cc5736c"
+  integrity sha512-6ejO0g1RrFCYyjuhBvlUZi6+rE3UQg3ZCm72qHRhxIRT8E5WR+CUaXwuH1mZf9aAj3dlyslgZNwNcPG4y45s+Q==
   dependencies:
     glob "^7.1.6"
     typescript "^3.8.3"
