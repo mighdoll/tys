@@ -14,45 +14,70 @@ import TysConfig from "./TysConfig";
 import { once } from "events";
 import yargs from "yargs";
 
-const defaultConfig = "tys.config.ts";
-
+const defaultConfigFile = "tys.config.ts";
 const defaultOutDir = ".build"; // for the tys users compiled output
 
-tysArgv(process.argv);
+// tysArgv(process.argv).then(result => process.exit(result));
 
-async function tysArgv(argv: string[]): Promise<number> {
-  const params = parseArgs(argv);
+export { TysConfig };
+
+export async function tysArgv(argv: string[]): Promise<number> {
+  const args = stripLauncherArgs(argv);
+  return tysArgs(args);
+}
+
+export async function tysCommandLine(cmdLine: string): Promise<number> {
+  const args = cmdLine.split(/\s+/);
+  args.unshift("tys");
+  return tysArgv(args);
+}
+
+async function tysArgs(args: string[]): Promise<number> {
+  const params = parseArgs(args);
   const config = getConfig(params);
   const { tsFile, otherTsFiles, outDir, command } = config;
 
   const sources = [tsFile, ...otherSources(otherTsFiles)];
   const realOutDir = outDir || defaultOutDir;
-  const fullCommand = commandToRun(tsFile, realOutDir, command);
+  const fullCommand = commandToRun(
+    tsFile,
+    realOutDir,
+    params.commandArgs,
+    command
+  );
 
-  expectFilesExist([tsFile]) || process.exit(1);
-  compileIfNecessary(sources, realOutDir) || process.exit(1);
+  console.log("tysArgs.sources", sources);
+  const exist = expectFilesExist([tsFile]);
+  if (!exist) {
+    return Promise.resolve(-1);
+  }
+  const built = compileIfNecessary(sources, realOutDir);
+  if (!built) {
+    return Promise.resolve(-2);
+  }
+
   const proc = logExec(fullCommand, "");
-  const [result] = await once(proc, "exit");
+  const results = await once(proc, "exit");
+  const [result] = results;
   return result;
 }
 
 interface Arguments {
   config?: string;
   tsFile?: string;
-  _: string[]
+  commandArgs: string[];
 }
 
 function getConfig(params: Arguments): TysConfig {
-  const {config, tsFile} = params;
+  const { config, tsFile } = params;
   if (config) {
     return loadTsConfig<TysConfig>(config) || process.exit(1);
   } else if (tsFile) {
-    console.log("found tsFile", tsFile);
     return {
       tsFile
     };
   } else {
-    return loadTsConfig<TysConfig>(defaultConfig) || process.exit(1);
+    return loadTsConfig<TysConfig>(defaultConfigFile) || process.exit(1);
   }
 }
 
@@ -61,19 +86,52 @@ function getConfig(params: Arguments): TysConfig {
 // TODO add option for outDir
 // TODO add option for -- to pass to cmd
 
-function parseArgs(argv: string[]): Arguments {
-  const result = yargs
+function parseArgs(args: string[]): Arguments {
+  const commandArgs = [];
+  const localArgs = tysLocalArgs(args);
+  console.log("parsed args", localArgs);
+
+  const config = configFileParameter(localArgs.config);
+  const unparsed = localArgs._.slice();
+  console.log("unparsed", unparsed);
+  let tsFile: string | undefined;
+  if (!config && unparsed.length > 0) {
+    tsFile = unparsed.shift();
+  }
+  if (commandArgs.length === 0) {
+    commandArgs.push(...unparsed);
+  }
+
+  const tysArgs: Arguments = {
+    config,
+    tsFile,
+    commandArgs
+  };
+  console.log("tys args", tysArgs);
+
+  return tysArgs;
+}
+
+function tysLocalArgs(args: string[]) {
+  return yargs
     .option("config", {
       alias: "c",
-      describe: "tys configuration file",
-      default: defaultConfig
+      string: true,
+      describe: "tys configuration file"
     })
     .usage("$0 tsFile \n$0 -c [tysConfigFile]")
     .help()
-    .parse(argv);
-  console.log("parsed args", result);
-  
-  return result;
+    .parse(args);
+}
+
+function configFileParameter(config: unknown): string | undefined {
+  if (config === undefined) {
+    return undefined; // no --config specified
+  } else if (typeof config === "string" && config.length > 0) {
+    return config; // --config specified
+  } else {
+    return defaultConfigFile; // --config  specified but no file included
+  }
 }
 
 function otherSources(otherTsGlobs: string[] | undefined): string[] {
@@ -86,17 +144,20 @@ function otherSources(otherTsGlobs: string[] | undefined): string[] {
   return sources;
 }
 
-function commandToRun(tsFile: string, realOutDir: string, command?: string) {
-  const cmdArgs = process.argv.slice(2).join(" ");
+function commandToRun(
+  tsFile: string,
+  realOutDir: string,
+  cmdArgs: string[],
+  command?: string
+) {
   const jsPath = jsOutFile(tsFile, realOutDir);
   const realCmd = command || `node ${jsPath}`;
   return `${realCmd} ${cmdArgs}`;
 }
 
-export async function tysCommandLine(cmdLine: string): Promise<number> {
-  const args = cmdLine.split(/\s+/);
-  args.unshift("tys");
-  return tysArgv(args);
+function stripLauncherArgs(argv: string[]): string[] {
+  const programArg = /(?:tys|node|yarn|npm)(?:.[a-zA-Z]+)|[]$/;
+  const found = argv.findIndex(arg => !arg.match(programArg));
+  const firstRealArg = Math.max(found, 0);
+  return argv.slice(firstRealArg);
 }
-
-export { TysConfig };
