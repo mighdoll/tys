@@ -2,7 +2,7 @@
   "name": "tys",
   "version": "0.1.0",
   "main": "dist/tys.js",
-  "types": "dist/index.d.ts",
+  "types": "dist/tys.d.ts",
   "description": "Run typescript scripts faster with cached compilation.",
   "keywords": [
     "typescript",
