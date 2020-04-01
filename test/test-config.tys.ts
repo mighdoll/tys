@@ -1,7 +1,7 @@
 import TysConfig from "../src/TysConfig";
 
-export const testConfigFile = "test/test-config.tys.ts";
+export const testProgram = "test/program.ts";
 
 export default {
-  tsFile: testConfigFile
+  tsFile: testProgram
 } as TysConfig;

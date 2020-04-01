@@ -6,11 +6,11 @@ import { defaultOutDir } from "config-file-ts";
 import rimraf from "rimraf";
 import { run } from "../src/execUtil";
 import { tysCommandLine } from "../src/scriptys";
-import { testConfigFile } from "./test-config.tys";
 
 chai.use(chaiAsPromised);
 
 const testProgram = "test/program.ts";
+const testConfig = "test/test-config.tys.ts";
 
 test("run program", async () => {
   clearCache(testProgram);
@@ -31,19 +31,21 @@ test("run tys cli", async () => {
   return result.should.eventually.equal(3);
 });
 
-test.skip("config file", () => {
-  clearCache(testConfigFile);
-  const result = tysCommandLine(`-c ${testConfigFile} 5`);
+test("config file", () => {
+  clearCache(testConfig, testProgram);
+  const result = tysCommandLine(`-c ${testConfig} 5`);
   result.should.eventually.equal(5);
 });
 
 test.skip("default config file", () => {
-  clearCache(testConfigFile);
+  clearCache(testConfig, testProgram);
   const result = tysCommandLine(`-c -- 8`);
   result.should.eventually.equal(8);
 });
 
-function clearCache(tsFile: string): void {
-  const outDir = defaultOutDir(tsFile);
-  rimraf.sync(outDir);
+function clearCache(...tsFiles: string[]): void {
+  for (const tsFile of tsFiles) {
+    const outDir = defaultOutDir(tsFile);
+    rimraf.sync(outDir);
+  }
 }
