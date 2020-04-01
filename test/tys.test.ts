@@ -6,7 +6,8 @@ import { defaultOutDir } from "config-file-ts";
 import rimraf from "rimraf";
 import { testConfigFile } from "./test-config.tys";
 import { tysCommandLine } from "../src/scriptys";
-import { logExec } from "../src/execUtil";
+import { logExec, run } from "../src/execUtil";
+import { once } from "events";
 
 chai.use(chaiAsPromised);
 
@@ -24,8 +25,8 @@ test("run program with -- args", () => {
   return result.should.eventually.equal(7);
 });
 
-test.skip("run bin cli", () => {  // note need to run 'yarn dist' first
-  const result = logExec("../bin/tys test/program.ts 3");
+test("run tys cli", async () => {  // note need to run 'yarn dist' first
+  const result = run("node dist/tys test/program.ts 3");
   return result.should.eventually.equal(3);
 });
 
