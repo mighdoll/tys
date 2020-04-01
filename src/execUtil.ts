@@ -52,16 +52,44 @@ function logger(possiblePrefix: string) {
  * @returns the process
  */
 export function logExec(cmdLine: string, prefix?: string): ChildProcess {
+  const { cmd, args } = splitCmdLine(cmdLine);
+  return logExecArray(cmd, args, prefix);
+}
+
+/** Execute a command in a subprocess.
+ *
+ * stdio is inherited from our process.
+ *
+ * @return a promise containing the return code of the command.
+ */
+export async function run(cmdLine: string): Promise<number> {
+  const { cmd, args } = splitCmdLine(cmdLine);
+  const childProc = spawn(cmd, args, { stdio: "inherit" });
+  const promisedResult: Promise<number> = once(childProc, "exit").then(
+    ([result]) => result
+  );
+  return promisedResult;
+}
+
+interface CommandParts {
+  cmd: string;
+  args: string[];
+}
+
+function splitCmdLine(cmdLine: string): CommandParts {
   const all = mkArgs(cmdLine);
   const cmd = all[0];
   const args = all.slice(1);
-  return logExecArray(cmd, args, prefix);
+  return {
+    cmd,
+    args
+  };
 }
 
 /** split up a string containing command line arguments
  * @returns an array suitable for spawn or exec
  */
-export function mkArgs(line: string): string[] {
+function mkArgs(line: string): string[] {
   const words = /(?:[^\s"]+|"[^"]*")+/g;
   const matched = line.match(words)!;
   return [...matched];
@@ -83,7 +111,10 @@ export function needsCompile(srcGlobs: string[], outDir: string): boolean {
   return anyOutDated(srcDestPairs);
 }
 
-function compilationPairs(srcFiles: string[], outDir: string): [string, string][] {
+function compilationPairs(
+  srcFiles: string[],
+  outDir: string
+): [string, string][] {
   return srcFiles.map(file => {
     const outFile = changeSuffix(file, ".js");
     const outPath = path.join(outDir, outFile);
@@ -111,7 +142,7 @@ function changeSuffix(filePath: string, suffix: string): string {
   return path.join(dir, base + suffix);
 }
 
-export function time<T>(fn: () => T, label?:string): T {
+export function time<T>(fn: () => T, label?: string): T {
   const start = process.hrtime();
   const result = fn();
   const elapsed = process.hrtime(start);
