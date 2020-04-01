@@ -5,7 +5,7 @@ import chaiAsPromised from "chai-as-promised";
 import { defaultOutDir } from "config-file-ts";
 import rimraf from "rimraf";
 import { testConfigFile } from "./test-config.tys";
-import { tysCommandLine } from "../src/tys";
+import { tysCommandLine } from "../src/scriptys";
 import { logExec } from "../src/execUtil";
 
 chai.use(chaiAsPromised);

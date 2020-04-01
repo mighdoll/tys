@@ -2,7 +2,7 @@ import typescript2 from "rollup-plugin-typescript2";
 
 export default [
   {
-    input: ["src/tys.ts"],
+    input: ["src/scriptys.ts"],
     output: [
       {
         dir: "dist",
@@ -22,7 +22,7 @@ export default [
     ]
   },
   {
-    input: ["src/cli.ts"],
+    input: ["src/tys.ts"],
     output: [
       {
         dir: "dist",
@@ -40,7 +40,7 @@ export default [
       "config-file-ts",
       "glob",
       "yargs",
-      "tys"
+      "scriptys"
     ]
   }
 ];
