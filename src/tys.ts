@@ -28,8 +28,7 @@ export async function tysArgv(argv: string[]): Promise<number> {
 
 export async function tysCommandLine(cmdLine: string): Promise<number> {
   const args = cmdLine.split(/\s+/);
-  args.unshift("tys");
-  return tysArgv(args);
+  return tysArgs(args);
 }
 
 async function tysArgs(args: string[]): Promise<number> {
