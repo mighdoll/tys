@@ -7,16 +7,18 @@ import {
   compileIfNecessary,
   jsOutFile,
   loadTsConfig,
-  expectFilesExist
+  expectFilesExist,
+  defaultOutDir
 } from "config-file-ts";
 import { logExec } from "./execUtil";
 import TysConfig from "./TysConfig";
 import { once } from "events";
 import yargs from "yargs";
+import path from "path";
 
 const defaultConfigFile = "tys.config.ts";
-const defaultOutDir = ".build"; // for the tys users compiled output
 
+// TODO move this into a cli.ts
 // tysArgv(process.argv).then(result => process.exit(result));
 
 export { TysConfig };
@@ -37,7 +39,7 @@ async function tysArgs(args: string[]): Promise<number> {
   const { tsFile, otherTsFiles, outDir, command } = config;
 
   const sources = [tsFile, ...otherSources(otherTsFiles)];
-  const realOutDir = outDir || defaultOutDir;
+  const realOutDir = outDir || defaultOutDir(path.resolve(tsFile), "tys");
   const fullCommand = commandToRun(
     tsFile,
     realOutDir,
@@ -45,7 +47,6 @@ async function tysArgs(args: string[]): Promise<number> {
     command
   );
 
-  console.log("tysArgs.sources", sources);
   const exist = expectFilesExist([tsFile]);
   if (!exist) {
     return Promise.resolve(-1);
@@ -88,11 +89,9 @@ function getConfig(params: Arguments): TysConfig {
 function parseArgs(args: string[]): Arguments {
   const commandArgs = [];
   const localArgs = tysLocalArgs(args);
-  console.log("parsed args", localArgs);
 
   const config = configFileParameter(localArgs.config);
   const unparsed = localArgs._.slice();
-  console.log("unparsed", unparsed);
   let tsFile: string | undefined;
   if (!config && unparsed.length > 0) {
     tsFile = unparsed.shift();
