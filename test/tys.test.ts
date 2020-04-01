@@ -1,13 +1,12 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
-import "chai/register-should";
 import chai from "chai";
 import chaiAsPromised from "chai-as-promised";
+import "chai/register-should";
 import { defaultOutDir } from "config-file-ts";
 import rimraf from "rimraf";
-import { testConfigFile } from "./test-config.tys";
+import { run } from "../src/execUtil";
 import { tysCommandLine } from "../src/scriptys";
-import { logExec, run } from "../src/execUtil";
-import { once } from "events";
+import { testConfigFile } from "./test-config.tys";
 
 chai.use(chaiAsPromised);
 
@@ -25,7 +24,8 @@ test("run program with -- args", () => {
   return result.should.eventually.equal(7);
 });
 
-test("run tys cli", async () => { // note need to run 'yarn dist' first
+test("run tys cli", async () => {
+  // note need to run 'yarn dist' first
   clearCache(testProgram);
   const result = run(`node dist/tys ${testProgram} 3`);
   return result.should.eventually.equal(3);
