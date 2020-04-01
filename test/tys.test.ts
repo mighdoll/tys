@@ -6,6 +6,7 @@ import { defaultOutDir } from "config-file-ts";
 import rimraf from "rimraf";
 import { testConfigFile } from "./test-config.tys";
 import { tysCommandLine } from "../src/tys";
+import { logExec } from "../src/execUtil";
 
 chai.use(chaiAsPromised);
 
@@ -21,6 +22,11 @@ test("run program with -- args", () => {
   rimraf.sync(outDir);
   const result = tysCommandLine(`test/program.ts -- 7`);
   return result.should.eventually.equal(7);
+});
+
+test.skip("run program binary", () => {
+  const result = logExec("tsc test/program.ts 3");
+  return result.should.eventually.equal(3);
 });
 
 test.skip("config file", () => {
