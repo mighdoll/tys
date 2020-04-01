@@ -24,8 +24,8 @@ test("run program with -- args", () => {
   return result.should.eventually.equal(7);
 });
 
-test.skip("run program binary", () => {
-  const result = logExec("tsc test/program.ts 3");
+test.skip("run bin cli", () => {  // note need to run 'yarn dist' first
+  const result = logExec("../bin/tys test/program.ts 3");
   return result.should.eventually.equal(3);
 });
 

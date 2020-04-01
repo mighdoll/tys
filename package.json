@@ -39,6 +39,7 @@
   },
   "scripts": {
     "dev": "tsc",
+    "test": "yarn dist && jest",
     "dist": "rimraf dist && rollup -c"
   },
   "repository": {

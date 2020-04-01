@@ -18,9 +18,6 @@ import path from "path";
 
 const defaultConfigFile = "tys.config.ts";
 
-// TODO move this into a cli.ts
-// tysArgv(process.argv).then(result => process.exit(result));
-
 export { TysConfig };
 
 export async function tysArgv(argv: string[]): Promise<number> {
