@@ -1,8 +1,8 @@
 import typescript2 from "rollup-plugin-typescript2";
 
 export default [
-  {
-    input: ["src/scriptys.ts"],
+  { // main library
+    input: ["src/scriptys.ts"], 
     output: [
       {
         dir: "dist",
@@ -21,7 +21,7 @@ export default [
       "yargs"
     ]
   },
-  {
+  { // tys bin script
     input: ["src/tys.ts"],
     output: [
       {
@@ -33,14 +33,7 @@ export default [
     ],
     plugins: [typescript2()],
     external: [
-      "fs",
-      "path",
-      "events",
-      "child_process",
-      "config-file-ts",
-      "glob",
-      "yargs",
-      "scriptys"
+      "./scriptys"
     ]
   }
 ];
