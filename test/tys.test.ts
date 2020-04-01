@@ -11,35 +11,39 @@ import { once } from "events";
 
 chai.use(chaiAsPromised);
 
+const testProgram = "test/program.ts";
+
 test("run program", async () => {
-  const outDir = defaultOutDir(testConfigFile);
-  rimraf.sync(outDir);
-  const result = tysCommandLine(`test/program.ts 4`);
+  clearCache(testProgram);
+  const result = tysCommandLine(`${testProgram} 4`);
   return result.should.eventually.equal(4);
 });
 
 test("run program with -- args", () => {
-  const outDir = defaultOutDir(testConfigFile);
-  rimraf.sync(outDir);
-  const result = tysCommandLine(`test/program.ts -- 7`);
+  clearCache(testProgram);
+  const result = tysCommandLine(`${testProgram} -- 7`);
   return result.should.eventually.equal(7);
 });
 
-test("run tys cli", async () => {  // note need to run 'yarn dist' first
-  const result = run("node dist/tys test/program.ts 3");
+test("run tys cli", async () => { // note need to run 'yarn dist' first
+  clearCache(testProgram);
+  const result = run(`node dist/tys ${testProgram} 3`);
   return result.should.eventually.equal(3);
 });
 
 test.skip("config file", () => {
-  const outDir = defaultOutDir(testConfigFile);
-  rimraf.sync(outDir);
+  clearCache(testConfigFile);
   const result = tysCommandLine(`-c ${testConfigFile} 5`);
   result.should.eventually.equal(5);
 });
 
 test.skip("default config file", () => {
-  const outDir = defaultOutDir(testConfigFile);
-  rimraf.sync(outDir);
+  clearCache(testConfigFile);
   const result = tysCommandLine(`-c -- 8`);
   result.should.eventually.equal(8);
 });
+
+function clearCache(tsFile: string): void {
+  const outDir = defaultOutDir(tsFile);
+  rimraf.sync(outDir);
+}
