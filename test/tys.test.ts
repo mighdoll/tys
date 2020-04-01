@@ -16,11 +16,11 @@ test("run program", async () => {
   return result.should.eventually.equal(4);
 });
 
-test.skip("run program with -- args", () => {
+test("run program with -- args", () => {
   const outDir = defaultOutDir(testConfigFile);
   rimraf.sync(outDir);
   const result = tysCommandLine(`test/program.ts -- 7`);
-  result.should.eventually.equal(7);
+  return result.should.eventually.equal(7);
 });
 
 test.skip("config file", () => {
