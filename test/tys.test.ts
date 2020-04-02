@@ -5,7 +5,7 @@ import "chai/register-should";
 import { defaultOutDir } from "config-file-ts";
 import rimraf from "rimraf";
 import { run } from "../src/execUtil";
-import { tysCommandLine, stripLauncherArgs } from "../src/scriptys";
+import { stripLauncherArgs, scriptysCommandLine } from "../src/scriptys";
 
 chai.use(chaiAsPromised);
 
@@ -30,13 +30,13 @@ test("stripLauncherArgs", () => {
 
 test("run program", async () => {
   clearCache(testProgram);
-  const result = tysCommandLine(`${testProgram} 4`);
+  const result = scriptysCommandLine(`${testProgram} 4`);
   return result.should.eventually.equal(4);
 });
 
 test("run program with -- args", () => {
   clearCache(testProgram);
-  const result = tysCommandLine(`${testProgram} -- 7`);
+  const result = scriptysCommandLine(`${testProgram} -- 7`);
   return result.should.eventually.equal(7);
 });
 
@@ -49,13 +49,13 @@ test("run tys cli", async () => {
 
 test("config file", () => {
   clearCache(testConfig, testProgram);
-  const result = tysCommandLine(`-c ${testConfig} 5`);
+  const result = scriptysCommandLine(`-c ${testConfig} 5`);
   return result.should.eventually.equal(5);
 });
 
 test("default config file", () => {
   clearCache(testConfig, testProgram);
-  const result = tysCommandLine(`-c`);
+  const result = scriptysCommandLine(`-c`);
   return result.should.eventually.equal(99);
 });
 

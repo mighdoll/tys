@@ -1,3 +1,3 @@
-import { tysArgv } from "./scriptys";
+import { scriptysArgv } from "./scriptys";
 
-tysArgv(process.argv).then(result => process.exit(result));
+scriptysArgv(process.argv).then(result => process.exit(result));

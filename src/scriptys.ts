@@ -2,7 +2,13 @@
 //   compiles the command if necessary
 //
 
-import { compileIfNecessary, defaultOutDir, expectFilesExist, jsOutFile, loadTsConfig } from "config-file-ts";
+import {
+  compileIfNecessary,
+  defaultOutDir,
+  expectFilesExist,
+  jsOutFile,
+  loadTsConfig
+} from "config-file-ts";
 import glob from "glob";
 import path from "path";
 import yargs from "yargs";
@@ -13,17 +19,30 @@ const defaultConfigFile = "tysconfig.ts";
 
 export { TysConfig };
 
-export async function tysArgv(argv: string[]): Promise<number> {
+/** Launch scriptys
+ *
+ * @param argv array containing launcher program name, and command line arguments
+ * @returns the result of the executed script
+ */
+export async function scriptysArgv(argv: string[]): Promise<number> {
   const args = stripLauncherArgs(argv);
-  return tysArgs(args);
+  return scriptysArgs(args);
 }
 
-export async function tysCommandLine(cmdLine: string): Promise<number> {
+/** Launch scriptys
+ * @param cmdLine command line arguments to tys
+ * @returns the result of the executed script
+ */
+export async function scriptysCommandLine(cmdLine: string): Promise<number> {
   const args = cmdLine.split(/\s+/);
-  return tysArgs(args);
+  return scriptysArgs(args);
 }
 
-async function tysArgs(args: string[]): Promise<number> {
+/** Launch scriptys
+ * @param args command line arguments
+ * @returns the result of the executed script
+ */
+async function scriptysArgs(args: string[]): Promise<number> {
   const params = parseArgs(args);
   const config = getConfig(params);
   if (!config) {
