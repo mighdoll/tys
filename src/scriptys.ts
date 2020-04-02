@@ -2,19 +2,12 @@
 //   compiles the command if necessary
 //
 
+import { compileIfNecessary, defaultOutDir, expectFilesExist, jsOutFile, loadTsConfig } from "config-file-ts";
 import glob from "glob";
-import {
-  compileIfNecessary,
-  jsOutFile,
-  loadTsConfig,
-  expectFilesExist,
-  defaultOutDir
-} from "config-file-ts";
-import { logExec, run } from "./execUtil";
-import TysConfig from "./TysConfig";
-import { once } from "events";
-import yargs from "yargs";
 import path from "path";
+import yargs from "yargs";
+import { run } from "./execUtil";
+import TysConfig from "./TysConfig";
 
 const defaultConfigFile = "tysconfig.ts";
 
