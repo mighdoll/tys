@@ -150,9 +150,17 @@ function commandToRun(
   return `${realCmd} ${cmdArgs}`;
 }
 
-function stripLauncherArgs(argv: string[]): string[] {
-  const programArg = /(?:tys|node|yarn|npm)(?:.[a-zA-Z]+)|[]$/;
-  const found = argv.findIndex(arg => !arg.match(programArg));
-  const firstRealArg = Math.max(found, 0);
-  return argv.slice(firstRealArg);
+export function stripLauncherArgs(argv: string[]): string[] {
+  const firstRealArg = argv.findIndex(arg => !isLauncherArg(arg));
+  if (firstRealArg === -1) {
+    return [];
+  } else {
+    const result = argv.slice(firstRealArg);
+    return result;
+  }
+}
+
+const launcherArg = /^(?:tys|node|yarn|npm)$/;
+function isLauncherArg(arg: string): boolean {
+  return path.basename(arg).match(launcherArg) !== null;
 }
