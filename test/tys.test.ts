@@ -59,16 +59,6 @@ test("default config file", () => {
   return result.should.eventually.equal(99);
 });
 
-function withDir<T>(dir: string, fn: () => T): T {
-  const origDir = process.cwd();
-  try {
-    process.chdir(dir);
-    return fn();
-  } finally {
-    process.chdir(origDir);
-  }
-}
-
 function clearCache(...tsFiles: string[]): void {
   for (const tsFile of tsFiles) {
     const outDir = defaultOutDir(tsFile);
