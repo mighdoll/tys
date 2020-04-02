@@ -14,18 +14,16 @@ const testConfig = "test/test-config.tys.ts";
 
 test("stripLauncherArgs", () => {
   const good = [
-    '/home/lee/nodeish/foo.ts',
-    'this/node/that',
-    'tysish',
-    'config.tys.ts'
+    "/home/lee/nodeish/foo.ts",
+    "this/node/that",
+    "tysish",
+    "config.tys.ts"
   ];
-  const bad = [
-    '/foo/bar/node',
-  ];
+  const bad = ["/foo/bar/node"];
   for (const arg of good) {
     stripLauncherArgs([arg]).should.deep.equal([arg]);
   }
-  for (const arg of bad ) {
+  for (const arg of bad) {
     stripLauncherArgs([arg]).should.deep.equal([]);
   }
 });
@@ -47,7 +45,6 @@ test("run tys cli", async () => {
   clearCache(testProgram);
   const result = run(`node dist/tys ${testProgram} 3`);
   return result.should.eventually.equal(3);
-  
 });
 
 test("config file", () => {
@@ -56,11 +53,21 @@ test("config file", () => {
   return result.should.eventually.equal(5);
 });
 
-test.skip("default config file", () => {
+test("default config file", () => {
   clearCache(testConfig, testProgram);
-  const result = tysCommandLine(`-c -- 8`);
-  return result.should.eventually.equal(8);
+  const result = tysCommandLine(`-c`);
+  return result.should.eventually.equal(99);
 });
+
+function withDir<T>(dir: string, fn: () => T): T {
+  const origDir = process.cwd();
+  try {
+    process.chdir(dir);
+    return fn();
+  } finally {
+    process.chdir(origDir);
+  }
+}
 
 function clearCache(...tsFiles: string[]): void {
   for (const tsFile of tsFiles) {

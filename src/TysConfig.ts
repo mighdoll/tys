@@ -8,7 +8,7 @@ export default interface TysConfig {
   /** directory containing compiled js version of typescript files */
   outDir?: string,
 
-  /** command to run. If not specified, gu will run node on the js file 
+  /** command to run. If not specified, tys will run node on the js file 
    * compiled from tsFile */
   command?: string,
 

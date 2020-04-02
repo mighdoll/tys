@@ -10,13 +10,13 @@ import {
   expectFilesExist,
   defaultOutDir
 } from "config-file-ts";
-import { logExec } from "./execUtil";
+import { logExec, run } from "./execUtil";
 import TysConfig from "./TysConfig";
 import { once } from "events";
 import yargs from "yargs";
 import path from "path";
 
-const defaultConfigFile = "tys.config.ts";
+const defaultConfigFile = "tysconfig.ts";
 
 export { TysConfig };
 
@@ -33,6 +33,9 @@ export async function tysCommandLine(cmdLine: string): Promise<number> {
 async function tysArgs(args: string[]): Promise<number> {
   const params = parseArgs(args);
   const config = getConfig(params);
+  if (!config) {
+    return Promise.reject("config not found");
+  }
   const { tsFile, otherTsFiles, outDir, command } = config;
 
   const sources = [tsFile, ...otherSources(otherTsFiles)];
@@ -53,10 +56,7 @@ async function tysArgs(args: string[]): Promise<number> {
     return Promise.resolve(-2);
   }
 
-  const proc = logExec(fullCommand, "");
-  const results = await once(proc, "exit");
-  const [result] = results;
-  return result;
+  return run(fullCommand);
 }
 
 interface Arguments {
@@ -65,23 +65,22 @@ interface Arguments {
   commandArgs: string[];
 }
 
-function getConfig(params: Arguments): TysConfig {
+function getConfig(params: Arguments): TysConfig | undefined {
   const { config, tsFile } = params;
   if (config) {
-    return loadTsConfig<TysConfig>(config) || process.exit(1);
+    return loadTsConfig<TysConfig>(config);
   } else if (tsFile) {
     return {
       tsFile
     };
   } else {
-    return loadTsConfig<TysConfig>(defaultConfigFile) || process.exit(1);
+    return loadTsConfig<TysConfig>(defaultConfigFile);
   }
 }
 
 // TODO add option for command to run
 // TODO add option for src files
 // TODO add option for outDir
-// TODO add option for -- to pass to cmd
 
 function parseArgs(args: string[]): Arguments {
   const commandArgs = [];
@@ -102,7 +101,6 @@ function parseArgs(args: string[]): Arguments {
     tsFile,
     commandArgs
   };
-  console.log("tys args", tysArgs);
 
   return tysArgs;
 }
