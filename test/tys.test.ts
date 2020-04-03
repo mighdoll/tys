@@ -59,6 +59,13 @@ test("default config file", () => {
   return result.should.eventually.equal(99);
 });
 
+test("recursively run tys on tys launcher", () => {
+  const tysLauncherSrc = "src/tys.ts";
+  clearCache(tysLauncherSrc);
+  const result = run(`node dist/tys ${tysLauncherSrc} --version`);
+  return result.should.eventually.equal(0);
+});
+
 function clearCache(...tsFiles: string[]): void {
   for (const tsFile of tsFiles) {
     const outDir = defaultOutDir(tsFile);
