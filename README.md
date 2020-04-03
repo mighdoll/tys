@@ -1,72 +1,74 @@
 ## Tys
-*A faster way to run Typescript scripts.*
-####
+Tys makes it fast to run short TypeScript scripts with full type checking 
+and a persistent cache for speed. 
 
-### Run a typescript script fast.
 ```bash
 # run a script
 $ tys myScript.ts
 
-# use Typescript gulpfile.ts for gulp but faster
+# use TypeScript gulpfile.ts for gulp
 $ gulptys clean test
 ```
 
-Tys makes it fast to run short Typescript scripts, with full type checking.
+Many people prefer TypeScript to JavaScript to get better error checking, 
+richer IDE support, etc. But TypeScript compilation takes a second or two
+and typically requires some build boilerplate. 
 
-Many people prefer Typescript to Javascript to get better error checking, 
-richer IDE support, etc. But Typescript compilation takes a second or two
-of time and typically requires some build boilerplate. For shorter scripts 
-that lack build environments and are run repeatedly, Typescript 
-is accordingly less popular. 
+Hopefully tys makes it easier to use TypeScript scripts for lightweight tasks
+like build scripts.
 
-Hopefully tys makes it easier to use Typescript scripts for build tooling, etc.
-
-### Alternatives to tys for running a short script
+### Alternatives to tys for running a TypeScript
 
 ts-node is more general purpose, but for the specific case of running
-command line scripts, tys is about 4x faster than ts-node, because tys
+command line scripts, tys is about 4x faster than ts-node because tys
 caches compilation results externally.
 
 sucrase-node is faster than ts-node, but provides no type checking.
 
-## Install in your project.
-```bash
-$ yarn add --dev tys
-```
-or 
-```bash
-$ yarn add --dev tys
-```
+### For .js/.ts config files
 
-### or install tys for general use:
+Tys can also compile and cache TypeScript configuration files for existing tools that 
+use .js configuration files.
+
+See [gulptys] for an example. (gulp supports .ts config files on its own, but using
+gulptys to compile and cache is faster.)
+
+See [config-file-ts](https://github.com/mighdoll/config-file-ts) to integrate TypeScript config files into tools you write.
+
+## Install 
 ```bash
+# yarn project
+$ yarn add --dev tys
+
+# npm project
+$ npm -i --dev tys
+
+# general use via yarn
 $ yarn global add tys
-```
-or
-```bash
+
+# general use via npm
 $ npm -i -g tys
 ```
 
 ### Usage
 ```bash
-tys tsFile [Options] [arguments]
-tys -c [tysConfigFile] [Options] [Arguments]
+tys [tys options] cmd.ts [-- cmd arguments]
+tys -c [tysConfigFile] [tys options] [-- cmd arguments]
 ```
 
-#### --command
-Specify an alternate command to execute after compilation. If not specified,
-tys will run your typescript file. 
+#### Command line options
 
-#### --config
-Specify 
+* ```--otherTsFiles <glob glob glob> ```
+If your TypeScript script imports other TypeScript files, list them here so that tys 
+knows when to recompile. No need to list packages installed in node_modules.
+* ```--command <cmd> [cmd arguments] ``` 
+Execute this command after TypeScript compilation instead of executing the compiled TypeScript.
+This is handy to compile a config file for an existing tool.
 
-#### --otherTsFiles
-If your main typescript script imports other typescript files, list them here. 
-Glob syntax is fine. This is important for robustness, so that tys knows when to 
-recompile.
-
-
-### Advanced options
-#### --outDir
-By default transpailed javascript files are cached in $HOME/.cache. You can set an
-alternate cache directory if you prefer.
+#### Advanced command line options
+* ```-c, --config [configFile] ```
+Specify tys options by default exporting a [TysConfig](src/TysConfig.ts) structure from a TypeScript file. If ```-c``` is specified without an config file, tys will look for a file 
+named *tysconfig.ts*.
+* ```--outDir <directory> ```
+Directory in which to cache transpiled JavaScript output files. 
+Without this option, tys caches in *$HOME/.cache/tys*. 
