@@ -7,7 +7,7 @@ and a persistent cache for speed.
 $ tys myScript.ts
 
 # use TypeScript gulpfile.ts for gulp
-$ gulptys clean test
+$ gulptys --tasks
 ```
 
 Many people prefer TypeScript to JavaScript to get better error checking, 
@@ -30,8 +30,8 @@ sucrase-node is faster than ts-node, but provides no type checking.
 Tys can also compile and cache TypeScript configuration files for existing tools that 
 use .js configuration files.
 
-See [gulptys] for an example. (gulp supports .ts config files on its own, but using
-gulptys to compile and cache is faster.)
+See [gulptys] for an example. (gulp supports .ts config files on its own, but 
+the gulptys wrapper is faster.)
 
 See [config-file-ts](https://github.com/mighdoll/config-file-ts) to integrate TypeScript config files into tools you write.
 
