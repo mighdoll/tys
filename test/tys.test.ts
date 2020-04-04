@@ -5,7 +5,7 @@ import "chai/register-should";
 import { defaultOutDir } from "config-file-ts";
 import rimraf from "rimraf";
 import { run } from "../src/execUtil";
-import { stripLauncherArgs, scriptysCommandLine } from "../src/scriptys";
+import { stripLauncherArgs, scriptysCommandLine, parseScriptysArgs } from "../src/scriptys";
 
 chai.use(chaiAsPromised);
 
@@ -64,6 +64,12 @@ test("recursively run tys on tys launcher", () => {
   clearCache(tysLauncherSrc);
   const result = run(`node dist/tys ${tysLauncherSrc} --version`);
   return result.should.eventually.equal(0);
+});
+
+test("parse args with command", () => {
+  const args = "-c tsconfig.ts -- --tasks".split(" ");
+  const tysArgs = parseScriptysArgs(args);
+  tysArgs.commandArgs.should.deep.equal(["--tasks"]); 
 });
 
 function clearCache(...tsFiles: string[]): void {
