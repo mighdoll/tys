@@ -31,9 +31,9 @@ Tys can also compile and cache TypeScript configuration files for existing tools
 use .js configuration files.
 
 See [gulptys] for an example. (gulp supports .ts config files on its own, but 
-the gulptys wrapper is faster.)
+the gulptys wrapper is 4x faster.)
 
-See [config-file-ts](https://github.com/mighdoll/config-file-ts) to integrate TypeScript config files into tools you write.
+See [config-file-ts](https://github.com/mighdoll/config-file-ts) to integrate caching TypeScript config files into tools you write.
 
 ## Install 
 ```bash
