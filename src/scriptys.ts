@@ -17,7 +17,7 @@ import TysConfig from "./TysConfig";
 
 const defaultConfigFile = "tysconfig.ts";
 
-export { TysConfig };
+export { TysConfig, run };
 
 /** Launch scriptys
  *
@@ -38,12 +38,23 @@ export async function scriptysCommandLine(cmdLine: string): Promise<number> {
   return scriptysArgs(args);
 }
 
+export function tysDefaultOutDir(tsFile: string): string {
+  return defaultOutDir(path.resolve(tsFile), "tys");
+}
+
+/** @return the output path to a .js file compiled from a .ts file */
+export function locateJsOut(tsFile: string, outDir?: string): string {
+  const realOutDir = outDir || tysDefaultOutDir(tsFile);
+  return jsOutFile(tsFile, realOutDir);
+}
+
 /** Launch scriptys
+ * 
  * @param args command line arguments
  * @returns the result of the executed script
  */
 async function scriptysArgs(args: string[]): Promise<number> {
-  const params = parseArgs(args);
+  const params = parseScriptysArgs(args);
   const config = getConfig(params);
   if (!config) {
     return Promise.reject("config not found");
@@ -51,7 +62,7 @@ async function scriptysArgs(args: string[]): Promise<number> {
   const { tsFile, otherTsFiles, outDir, command } = config;
 
   const sources = [tsFile, ...otherSources(otherTsFiles)];
-  const realOutDir = outDir || defaultOutDir(path.resolve(tsFile), "tys");
+  const realOutDir = outDir || tysDefaultOutDir(tsFile);
   const fullCommand = commandToRun(
     tsFile,
     realOutDir,
@@ -94,19 +105,15 @@ function getConfig(params: Arguments): TysConfig | undefined {
 // TODO add option for src files
 // TODO add option for outDir
 
-function parseArgs(args: string[]): Arguments {
-  const commandArgs = [];
+export function parseScriptysArgs(args: string[]): Arguments {
   const localArgs = tysLocalArgs(args);
-
   const config = configFileParameter(localArgs.config);
   const unparsed = localArgs._.slice();
   let tsFile: string | undefined;
   if (!config && unparsed.length > 0) {
     tsFile = unparsed.shift();
   }
-  if (commandArgs.length === 0) {
-    commandArgs.push(...unparsed);
-  }
+  const commandArgs = [...unparsed];
 
   const tysArgs: Arguments = {
     config,
