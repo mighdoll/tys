@@ -1,13 +1,16 @@
-// launcher for a typescript command
-//   compiles the command if necessary
-//
+/* sriptys (or tys for short) is a launcher to run TypeScript on node.
+ * It supports caching and scripts split over multiple source files.
+ * 
+ * Tys can be also configured to launch scripts other than the one being compiled
+ * which is handy to compile config files for other tools.
+ */
 
 import {
   compileIfNecessary,
   defaultOutDir,
   expectFilesExist,
   jsOutFile,
-  loadTsConfig
+  loadTsConfig,
 } from "config-file-ts";
 import glob from "glob";
 import path from "path";
@@ -49,7 +52,7 @@ export function locateJsOut(tsFile: string, outDir?: string): string {
 }
 
 /** Launch scriptys
- * 
+ *
  * @param args command line arguments
  * @returns the result of the executed script
  */
@@ -58,7 +61,7 @@ async function scriptysArgs(args: string[]): Promise<number> {
   const config = getConfig(params);
   if (!config) {
     return Promise.reject("config not found");
-  }
+  };
   const { tsFile, otherTsFiles, outDir, command } = config;
 
   const sources = [tsFile, ...otherSources(otherTsFiles)];
@@ -86,6 +89,7 @@ interface Arguments {
   config?: string;
   tsFile?: string;
   commandArgs: string[];
+  launcher: string;
 }
 
 function getConfig(params: Arguments): TysConfig | undefined {
@@ -94,49 +98,55 @@ function getConfig(params: Arguments): TysConfig | undefined {
     return loadTsConfig<TysConfig>(config);
   } else if (tsFile) {
     return {
-      tsFile
+      tsFile,
     };
   } else {
     return loadTsConfig<TysConfig>(defaultConfigFile);
   }
 }
 
-// TODO add option for command to run
-// TODO add option for src files
-// TODO add option for outDir
-
 export function parseScriptysArgs(args: string[]): Arguments {
-  const localArgs = tysLocalArgs(args);
-  const config = configFileParameter(localArgs.config);
-  const unparsed = localArgs._.slice();
+  const yargArgs = tysLocalArgs(args);
+  console.log("yargArgs", yargArgs);
+  const launcher = yargArgs.$0;
+  const config = configFileParameter(yargArgs.config);
+
+  const unparsed = yargArgs._.slice();
   let tsFile: string | undefined;
-  if (!config && unparsed.length > 0) {
+  if (!config && unparsed.length !== 0) {
     tsFile = unparsed.shift();
   }
   const commandArgs = [...unparsed];
 
   const tysArgs: Arguments = {
+    launcher,
     config,
     tsFile,
-    commandArgs
+    commandArgs,
   };
+  console.log("scriptys args", tysArgs);
 
   return tysArgs;
 }
+
+// TODO add option for command to run
+// TODO add option for src files
+// TODO add option for outDir
 
 function tysLocalArgs(args: string[]) {
   return yargs
     .option("config", {
       alias: "c",
       string: true,
-      describe: "tys configuration file"
+      describe: "tys configuration file",
     })
+    .command("$ <tsFile..>", false)
     .usage("$0 tsFile \n$0 -c [tysConfigFile]")
     .help()
     .parse(args);
 }
 
-function configFileParameter(config: unknown): string | undefined {
+function configFileParameter(config: string | undefined): string | undefined {
   if (config === undefined) {
     return undefined; // no --config specified
   } else if (typeof config === "string" && config.length > 0) {
@@ -168,7 +178,7 @@ function commandToRun(
 }
 
 export function stripLauncherArgs(argv: string[]): string[] {
-  const firstRealArg = argv.findIndex(arg => !isLauncherArg(arg));
+  const firstRealArg = argv.findIndex((arg) => !isLauncherArg(arg));
   if (firstRealArg === -1) {
     return [];
   } else {

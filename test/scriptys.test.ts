@@ -41,10 +41,15 @@ test("run program with -- args", () => {
 });
 
 test("run tys cli", async () => {
-  // note need to run 'yarn dist' first
   clearCache(testProgram);
-  const result = run(`node dist/tys ${testProgram} 3`);
+  const result = run(`node dist/tys ${testProgram} 3`); // run 'yarn dist' first
   return result.should.eventually.equal(3);
+});
+
+test("tys cli with default config", async () => {
+  clearCache(testProgram);
+  const result = run(`node dist/tys`); // note: need to run 'yarn dist' first
+  return result.should.eventually.equal(99);
 });
 
 test("config file", () => {
