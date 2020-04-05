@@ -5,23 +5,11 @@
  * which is handy to compile config files for other tools.
  */
 
-import {
-  compileIfNecessary,
-  defaultOutDir,
-  expectFilesExist,
-  jsOutFile,
-  loadTsConfig
-} from "config-file-ts";
+import { compileIfNecessary, defaultOutDir, jsOutFile } from "config-file-ts";
 import path from "path";
 import { run } from "./execUtil";
+import { scriptysParams, stripLauncherArgs } from "./scriptysArgs";
 import TysConfig from "./TysConfig";
-import {
-  parseScriptysArgs,
-  ParsedArguments,
-  commandToRun,
-  stripLauncherArgs,
-  scriptysParams
-} from "./scriptysArgs";
 
 export { TysConfig, run };
 

@@ -5,13 +5,12 @@ import "chai/register-should";
 import { defaultOutDir } from "config-file-ts";
 import rimraf from "rimraf";
 import { run } from "../src/execUtil";
-import { scriptysCommandLine} from "../src/scriptys";
+import { scriptysCommandLine } from "../src/scriptys";
 
 chai.use(chaiAsPromised);
 
 const testProgram = "test/program.ts";
 const testConfig = "test/test-config.tys.ts";
-
 
 test("run program", async () => {
   clearCache(testProgram);
@@ -59,7 +58,7 @@ test("recursively run tys on tys launcher", () => {
 test("parse args with command", () => {
   const args = "-c tsconfig.ts -- --tasks".split(" ");
   const tysArgs = parseScriptysArgs(args);
-  tysArgs.commandArgs.should.deep.equal(["--tasks"]); 
+  tysArgs.commandArgs.should.deep.equal(["--tasks"]);
 });
 
 function clearCache(...tsFiles: string[]): void {

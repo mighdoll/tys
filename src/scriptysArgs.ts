@@ -1,23 +1,23 @@
+import { expectFilesExist, jsOutFile, loadTsConfig } from "config-file-ts";
 import glob from "glob";
 import path from "path";
 import yargs from "yargs";
 import { TysConfig, tysDefaultOutDir } from "./scriptys";
-import { loadTsConfig, jsOutFile, expectFilesExist } from "config-file-ts";
 
 export interface ScriptysParams {
-  tsFile:string;
-  sources:string[];
-  realOutDir:string;
-  fullCommand:string;
+  tsFile: string;
+  sources: string[];
+  realOutDir: string;
+  fullCommand: string;
 }
 
-export function scriptysParams(args:string[]):ScriptysParams|undefined {
+export function scriptysParams(args: string[]): ScriptysParams | undefined {
   const params = parseScriptysArgs(args);
   const config = getConfig(params);
   if (!config) {
     console.error("config not found");
     return undefined;
-  };
+  }
   const { tsFile, otherTsFiles, outDir, command } = config;
   const exist = expectFilesExist([tsFile]);
   if (!exist) {
@@ -38,7 +38,7 @@ export function scriptysParams(args:string[]):ScriptysParams|undefined {
     sources,
     realOutDir,
     fullCommand
-  }
+  };
 }
 
 export interface ParsedArguments {
@@ -48,7 +48,10 @@ export interface ParsedArguments {
   launcher: string;
 }
 
-export function parseScriptysArgs(args: string[], _launcher?: string): ParsedArguments {
+export function parseScriptysArgs(
+  args: string[],
+  _launcher?: string
+): ParsedArguments {
   const yargArgs = tysLocalArgs(args);
   console.log("yargArgs", yargArgs);
   const launcher = _launcher || yargArgs.$0;
@@ -65,7 +68,7 @@ export function parseScriptysArgs(args: string[], _launcher?: string): ParsedArg
     launcher,
     config,
     tsFile,
-    commandArgs,
+    commandArgs
   };
   console.log("scriptys args", tysArgs);
 
@@ -81,7 +84,7 @@ function tysLocalArgs(args: string[]) {
     .option("config", {
       alias: "c",
       string: true,
-      describe: "tys configuration file",
+      describe: "tys configuration file"
     })
     .command("$ <tsFile..>", false)
     .usage("$0 tsFile \n$0 -c [tysConfigFile]")
@@ -89,7 +92,10 @@ function tysLocalArgs(args: string[]) {
     .parse(args);
 }
 
-function configArgument(config: string | undefined, launcher: string): string | undefined {
+function configArgument(
+  config: string | undefined,
+  launcher: string
+): string | undefined {
   if (config === undefined) {
     return undefined; // no --config specified
   } else if (typeof config === "string" && config.length > 0) {
@@ -125,14 +131,13 @@ function isLauncherArg(arg: string): boolean {
   return path.basename(arg).match(launcherArg) !== null;
 }
 
-
 function getConfig(params: ParsedArguments): TysConfig | undefined {
   const { config, tsFile } = params;
   if (config) {
     return loadTsConfig<TysConfig>(config);
   } else if (tsFile) {
     return {
-      tsFile,
+      tsFile
     };
   } else {
     console.error("no tsFile no config.tys.ts");
@@ -140,7 +145,7 @@ function getConfig(params: ParsedArguments): TysConfig | undefined {
   }
 }
 export function stripLauncherArgs(argv: string[]): string[] {
-  const firstRealArg = argv.findIndex((arg) => !isLauncherArg(arg));
+  const firstRealArg = argv.findIndex(arg => !isLauncherArg(arg));
   if (firstRealArg === -1) {
     return [];
   } else {
