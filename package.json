@@ -14,7 +14,8 @@
     "command-line"
   ],
   "bin": {
-    "tys": "dist/tys.js"
+    "tys": "dist/tys.js",
+    "gulptys": "dist/tys.js"
   },
   "dependencies": {
     "config-file-ts": "^0.1.7",
