@@ -5,28 +5,13 @@ import "chai/register-should";
 import { defaultOutDir } from "config-file-ts";
 import rimraf from "rimraf";
 import { run } from "../src/execUtil";
-import { stripLauncherArgs, scriptysCommandLine, parseScriptysArgs } from "../src/scriptys";
+import { scriptysCommandLine} from "../src/scriptys";
 
 chai.use(chaiAsPromised);
 
 const testProgram = "test/program.ts";
 const testConfig = "test/test-config.tys.ts";
 
-test("stripLauncherArgs", () => {
-  const good = [
-    "/home/lee/nodeish/foo.ts",
-    "this/node/that",
-    "tysish",
-    "config.tys.ts"
-  ];
-  const bad = ["/foo/bar/node"];
-  for (const arg of good) {
-    stripLauncherArgs([arg]).should.deep.equal([arg]);
-  }
-  for (const arg of bad) {
-    stripLauncherArgs([arg]).should.deep.equal([]);
-  }
-});
 
 test("run program", async () => {
   clearCache(testProgram);
@@ -60,7 +45,7 @@ test("config file", () => {
 
 test("default config file", () => {
   clearCache(testConfig, testProgram);
-  const result = scriptysCommandLine(`-c`);
+  const result = scriptysCommandLine("");
   return result.should.eventually.equal(99);
 });
 
