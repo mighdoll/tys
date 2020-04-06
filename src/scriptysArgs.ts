@@ -1,8 +1,8 @@
-import { expectFilesExist, jsOutFile, loadTsConfig } from "config-file-ts";
+import { defaultOutDir, expectFilesExist, jsOutFile, loadTsConfig } from "config-file-ts";
 import glob from "glob";
 import path from "path";
 import yargs from "yargs";
-import { TysConfig, tysDefaultOutDir } from "./scriptys";
+import TysConfig from "./TysConfig";
 
 export interface ScriptysParams {
   tsFile: string;
@@ -193,4 +193,8 @@ export function stripLauncherArgs(argv: string[]): string[] {
     const result = argv.slice(firstRealArg);
     return result;
   }
+}
+
+export function tysDefaultOutDir(tsFile: string): string {
+  return defaultOutDir(path.resolve(tsFile), "tys");
 }

@@ -5,10 +5,9 @@
  * which is handy to compile config files for other tools.
  */
 
-import { compileIfNecessary, defaultOutDir, jsOutFile } from "config-file-ts";
-import path from "path";
+import { compileIfNecessary, jsOutFile } from "config-file-ts";
 import { run } from "./execUtil";
-import { scriptysParams, stripLauncherArgs } from "./scriptysArgs";
+import { scriptysParams, stripLauncherArgs, tysDefaultOutDir } from "./scriptysArgs";
 import TysConfig from "./TysConfig";
 
 export { TysConfig, run };
@@ -30,10 +29,6 @@ export async function scriptysArgv(argv: string[]): Promise<number> {
 export async function scriptysCommandLine(cmdLine: string): Promise<number> {
   const args = cmdLine.split(/\s+/);
   return runScriptys(args);
-}
-
-export function tysDefaultOutDir(tsFile: string): string {
-  return defaultOutDir(path.resolve(tsFile), "tys");
 }
 
 /** @return the output path to a .js file compiled from a .ts file */
