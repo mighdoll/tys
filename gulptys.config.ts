@@ -1,4 +1,7 @@
-import { TysConfig, locateJsOut} from "tys";
+// TODO put this in dist and import from "tys" in the dist version
+
+// import { TysConfig, locateJsOut} from "tys";
+import { TysConfig, locateJsOut} from "./src/scriptys";
 
 const gulpFileJs = locateJsOut("gulpfile.ts");
 

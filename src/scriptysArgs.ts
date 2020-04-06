@@ -31,7 +31,7 @@ export function scriptysParams(args: string[]): ScriptysParams | undefined {
   const { tsFile, otherTsFiles, outDir, command } = config;
   const exist = expectFilesExist([tsFile]);
   if (!exist) {
-    console.error(`${tsFile} not found`);
+    console.error(`scriptysParams: ${tsFile} not found`);
     return undefined;
   }
 
@@ -164,7 +164,7 @@ export function commandToRun(
   return `${realCmd} ${cmdArgs}`;
 }
 
-const launcherArg = /^(?:tys|node|yarn|npm)$/;
+const launcherArg = /^(?:node|yarn|npm)$/;
 
 function isLauncherArg(arg: string): boolean {
   return path.basename(arg).match(launcherArg) !== null;
@@ -183,13 +183,12 @@ function getConfig(params: ParsedArguments): TysConfig | undefined {
     return undefined;
   }
 }
+
 export function stripLauncherArgs(argv: string[]): string[] {
-  const firstRealArg = argv.findIndex(arg => !isLauncherArg(arg));
-  if (firstRealArg === -1) {
-    return [];
+  if (isLauncherArg(argv[0])){
+    return argv.slice(2);
   } else {
-    const result = argv.slice(firstRealArg);
-    return result;
+    return argv.slice(1);
   }
 }
 

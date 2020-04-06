@@ -71,10 +71,10 @@ test("stripLauncherArgs", () => {
   ];
   const bad = ["/foo/bar/node"];
   for (const arg of good) {
-    stripLauncherArgs([arg]).should.deep.equal([arg]);
+    stripLauncherArgs([arg, "one", "two"]).should.deep.equal(["one", "two"]);
   }
   for (const arg of bad) {
-    stripLauncherArgs([arg]).should.deep.equal([]);
+    stripLauncherArgs([arg, "one", "two"]).should.deep.equal(["two"]);
   }
 });
 

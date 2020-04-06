@@ -43,17 +43,29 @@ test("recursively run tys on tys launcher", () => {
 });
 
 test("gulptys --version", async () => {
-  const dir = tmp.dirSync({keep: true});
+  const { dir, gulptys } = createGulptysLink();
+  // TODO capture and parse stdout in test
+  const result = run(`${gulptys} --version`);
+  const cleaned = result.then(code => {
+    dir.removeCallback();
+    return code;
+  });
+  return cleaned.should.eventually.equal(0);
+});
+
+interface GulptysLink {
+  dir: tmp.DirResult;
+  gulptys: string;
+}
+function createGulptysLink(): GulptysLink {
+  const dir = tmp.dirSync();
   const gulptys = path.join(dir.name, "gulptys");
   const tysPath = path.resolve("dist/tys.js");
   symLinkForce(tysPath, gulptys);
+
   fs.chmodSync(gulptys, 0o775);
-  const linkStat = fs.lstatSync(gulptys);
-  console.log("symbolic:", gulptys, linkStat.isSymbolicLink());
-  const result = run(`${gulptys} --version`);
-  return result;
-  // return result.then(() => dir.removeCallback());
-});
+  return { dir, gulptys };
+}
 
 function clearCache(...tsFiles: string[]): void {
   for (const tsFile of tsFiles) {
