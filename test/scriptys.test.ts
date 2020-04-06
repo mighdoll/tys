@@ -12,16 +12,12 @@ chai.use(chaiAsPromised);
 const testProgram = "test/program.ts";
 const testConfig = "test/test-config.tys.ts";
 
-test("run program", async () => {
-  clearCache(testProgram);
-  const result = scriptysCommandLine(`${testProgram} 4`);
-  return result.should.eventually.equal(4);
-});
+// note: need to run 'yarn dist' first
 
-test("run program with -- args", () => {
+test("tys cli with default config", async () => {
   clearCache(testProgram);
-  const result = scriptysCommandLine(`${testProgram} -- 7`);
-  return result.should.eventually.equal(7);
+  const result = run(`node dist/tys`); 
+  return result.should.eventually.equal(99);
 });
 
 test("run tys cli", async () => {
@@ -30,22 +26,16 @@ test("run tys cli", async () => {
   return result.should.eventually.equal(3);
 });
 
-test("tys cli with default config", async () => {
+test("run program with -- args", () => {
   clearCache(testProgram);
-  const result = run(`node dist/tys`); // note: need to run 'yarn dist' first
-  return result.should.eventually.equal(99);
+  const result = run(`node dist/tys ${testProgram} -- 7`);
+  return result.should.eventually.equal(7);
 });
 
 test("config file", () => {
   clearCache(testConfig, testProgram);
-  const result = scriptysCommandLine(`-c ${testConfig} 5`);
+  const result = run(`node dist/tys -c ${testConfig} 5`);
   return result.should.eventually.equal(5);
-});
-
-test("default config file", () => {
-  clearCache(testConfig, testProgram);
-  const result = scriptysCommandLine("");
-  return result.should.eventually.equal(99);
 });
 
 test("recursively run tys on tys launcher", () => {

@@ -16,11 +16,15 @@ testCmd("tys foo.ts", parsed => {
   parsed.tsFile!.should.equal("foo.ts");
 });
 
-testCmd("tys -- --tasks", parsed => {
+testCmd("tys --config fooConfig.ts", parsed => {
+  parsed.config!.should.equal("fooConfig.ts");
+});
+
+testCmd("tys --config fooConfig.ts -- --tasks", parsed => {
   const { tsFile, config, commandArgs } = parsed;
   expect(tsFile).toBeUndefined();
+  config!.should.equal("fooConfig.ts");
   commandArgs!.should.deep.equal(["--tasks"]);
-  config!.should.equal("tys.config.ts");
 });
 
 testCmd("gulptys", parsed => {
@@ -36,22 +40,13 @@ testCmd("gulptys --tasks", parsed => {
   expect(tsFile).toBeUndefined();
   config!.should.equal("gulptys.config.ts");
   commandArgs!.should.deep.equal(["--tasks"]);
-}, "zz");
+});
 
 function testCmd<T>(cmdLine:string, fn:(parsed:ParsedArguments)=>T, prefix=""):void {
   test(prefix+cmdLine, () => {
     return fn(parseCmdLine(cmdLine));
   });
 }
-
-// const tysNakedTasksCmd = "tys --tasks";
-// test(tysNakedTasksCmd, () => {
-//   const result = parseCmdLine(tysNakedTasksCmd);
-//   const { tsFile, config, commandArgs } = result;
-//   expect(tsFile).toBeUndefined();
-//   config!.should.equal("tys.config.ts");
-//   commandArgs.should.deep.equal(["--tasks"]);
-// });
 
 // test("parse tys tsFile --tasks", () => {
 //   const result = parseCmdLine("foo.ts --tasks", "/foo/bar/tys");

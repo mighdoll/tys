@@ -51,7 +51,6 @@ export interface ParsedArguments {
   config?: string;
   tsFile?: string;
   commandArgs: string[];
-  launcher: string;
 }
 
 /**
@@ -63,22 +62,32 @@ export function parseScriptysArgs(
   args: string[],
   _launcher?: string
 ): ParsedArguments | undefined {
-  const [tysArgs, commandArgs] = splitAtDDash(args);
-  console.log("tys, cmd", tysArgs, commandArgs);
-  const yargArgs = tysLocalArgs(tysArgs);
-  console.log("yargArgs", yargArgs);
-  const launcher = _launcher || yargArgs.$0;
+  const rawLauncher = _launcher || yargs.parse("").$0;
+  const launcher = path.basename(rawLauncher);
+  if (launcher !== "tys") {
+    return nonTysArguments(launcher, args);
+  }
 
+  return tysArguments(args);
+}
+
+/** Interpret arguments when launched as tys */
+function tysArguments(
+  args: string[]
+): ParsedArguments | undefined {
+  const [tysArgs, commandArgs] = splitAtDDash(args);
+  const yargArgs = tysLocalArgs(tysArgs);
+  // console.log("yargArgs", yargArgs);
   const unparsed = yargArgs._.slice();
   const tsFile = unparsed.shift();
   if (unparsed.length) {
     console.error("unparsed command line argument:", unparsed);
     return undefined;
   }
-  console.log("unparsed:", unparsed);
+  // console.log("unparsed:", unparsed);
   commandArgs.push(...unparsed);
 
-  const config = configParameter(yargArgs.config, launcher, tsFile);
+  const config = configParameter(yargArgs.config);
 
   if (config && tsFile) {
     console.error("specify a config file _or_ a tsFile. But not both", args);
@@ -86,14 +95,21 @@ export function parseScriptysArgs(
   }
 
   const parsedArgs: ParsedArguments = {
-    launcher,
     config,
     tsFile,
     commandArgs
   };
-  console.log("scriptys args", parsedArgs);
+  // console.log("scriptys args", parsedArgs);
 
   return parsedArgs;
+}
+
+function nonTysArguments(launcher: string, args: string[]): ParsedArguments {
+  const config = launcher + ".config.ts";
+  return {
+    config,
+    commandArgs: args
+  };
 }
 
 /** split a set of arguments before and after a "--"  */
@@ -119,21 +135,16 @@ function tysLocalArgs(args: string[]) {
       describe: "tys configuration file"
     })
     .command("$ <tsFile..>", false)
-    .usage("$0 tsFile \n$0 -c [tysConfigFile]")
+    .usage(
+      "$0 tsFile \n$0 -c [tysConfigFile]\nsymLinkToTys   # uses symlinkToTys.config.ts as config"
+    )
     .help()
     .parse(args);
 }
 
-function configParameter(
-  config: string | undefined,
-  launcher: string,
-  tsFile: string | undefined
-): string | undefined {
+function configParameter(config: string | undefined): string | undefined {
   if (typeof config === "string" && config.length > 0) {
     return config;
-  } else if (config === undefined && tsFile === undefined) {
-    const configFile = path.basename(launcher) + ".config.ts";
-    return configFile;
   } else {
     return undefined;
   }
