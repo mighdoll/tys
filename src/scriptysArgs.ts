@@ -11,16 +11,22 @@ export interface ScriptysParams {
   fullCommand: string;
 }
 
+/** Parse and validate command line and config parameters */
 export function scriptysParams(args: string[]): ScriptysParams | undefined {
   const params = parseScriptysArgs(args);
+  if (!params) {
+    return undefined;
+  }
+
   const config = getConfig(params);
   if (!config) {
-    console.error("config not found");
+    console.error("tys configuration not understood", args);
     return undefined;
   }
   const { tsFile, otherTsFiles, outDir, command } = config;
   const exist = expectFilesExist([tsFile]);
   if (!exist) {
+    console.error(`${tsFile} not found`);
     return undefined;
   }
 
@@ -48,31 +54,57 @@ export interface ParsedArguments {
   launcher: string;
 }
 
+/**
+ * Parse command line arguments for scriptys
+ * @param args command line argument array
+ * @param _launcher  (for tests) override launch command name (normally argv[0])
+ */
 export function parseScriptysArgs(
   args: string[],
   _launcher?: string
-): ParsedArguments {
-  const yargArgs = tysLocalArgs(args);
+): ParsedArguments | undefined {
+  const [tysArgs, commandArgs] = splitAtDDash(args);
+  console.log("tys, cmd", tysArgs, commandArgs);
+  const yargArgs = tysLocalArgs(tysArgs);
   console.log("yargArgs", yargArgs);
   const launcher = _launcher || yargArgs.$0;
-  const config = configArgument(yargArgs.config, launcher);
 
   const unparsed = yargArgs._.slice();
-  let tsFile: string | undefined;
-  if (!config && unparsed.length !== 0) {
-    tsFile = unparsed.shift();
+  const tsFile = unparsed.shift();
+  if (unparsed.length) {
+    console.error("unparsed command line argument:", unparsed);
+    return undefined;
   }
-  const commandArgs = [...unparsed];
+  console.log("unparsed:", unparsed);
+  commandArgs.push(...unparsed);
 
-  const tysArgs: ParsedArguments = {
+  const config = configParameter(yargArgs.config, launcher, tsFile);
+
+  if (config && tsFile) {
+    console.error("specify a config file _or_ a tsFile. But not both", args);
+    return undefined;
+  }
+
+  const parsedArgs: ParsedArguments = {
     launcher,
     config,
     tsFile,
     commandArgs
   };
-  console.log("scriptys args", tysArgs);
+  console.log("scriptys args", parsedArgs);
 
-  return tysArgs;
+  return parsedArgs;
+}
+
+/** split a set of arguments before and after a "--"  */
+function splitAtDDash(args: string[]): [string[], string[]] {
+  const found = args.findIndex(s => s === "--");
+  if (found !== -1) {
+    const before = args.slice(0, found);
+    const after = args.slice(found + 1);
+    return [before, after];
+  }
+  return [args, []];
 }
 
 // TODO add option for command to run
@@ -92,15 +124,18 @@ function tysLocalArgs(args: string[]) {
     .parse(args);
 }
 
-function configArgument(
+function configParameter(
   config: string | undefined,
-  launcher: string
+  launcher: string,
+  tsFile: string | undefined
 ): string | undefined {
-  if (config === undefined) {
-    return undefined; // no --config specified
-  } else if (typeof config === "string" && config.length > 0) {
-    return config; // --config specified
+  if (typeof config === "string" && config.length > 0) {
+    return config;
+  } else if (config === undefined && tsFile === undefined) {
+    const configFile = path.basename(launcher) + ".config.ts";
+    return configFile;
   } else {
+    return undefined;
   }
 }
 

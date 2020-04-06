@@ -55,11 +55,6 @@ test("recursively run tys on tys launcher", () => {
   return result.should.eventually.equal(0);
 });
 
-test("parse args with command", () => {
-  const args = "-c tsconfig.ts -- --tasks".split(" ");
-  const tysArgs = parseScriptysArgs(args);
-  tysArgs.commandArgs.should.deep.equal(["--tasks"]);
-});
 
 function clearCache(...tsFiles: string[]): void {
   for (const tsFile of tsFiles) {

@@ -50,9 +50,9 @@ export function locateJsOut(tsFile: string, outDir?: string): string {
 export async function runScriptys(args: string[]): Promise<number> {
   const params = scriptysParams(args);
   if (!params) {
-    return Promise.reject("invalid scriptys parameters");
+    return Promise.reject(`invalid scriptys parameters: ${args}`);
   }
-  const { tsFile, sources, realOutDir, fullCommand } = params;
+  const { sources, realOutDir, fullCommand } = params;
 
   const built = compileIfNecessary(sources, realOutDir);
   if (!built) {
