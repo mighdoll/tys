@@ -1,4 +1,9 @@
-import { defaultOutDir, expectFilesExist, jsOutFile, loadTsConfig } from "config-file-ts";
+import {
+  defaultOutDir,
+  expectFilesExist,
+  jsOutFile,
+  loadTsConfig
+} from "config-file-ts";
 import glob from "glob";
 import path from "path";
 import yargs from "yargs";
@@ -76,19 +81,12 @@ function tysArguments(args: string[]): ParsedArguments | undefined {
   const [tysArgs, commandArgs] = splitAtDDash(args);
   const yargArgs = tysLocalArgs(tysArgs);
   const unparsed = yargArgs._.slice();
-  const tsFile = unparsed.shift();
-  if (unparsed.length) {
-    console.error("unparsed command line argument:", unparsed);
-    return undefined;
+  const config = configParameter(yargArgs.config);
+  let tsFile: string | undefined;
+  if (!config) {
+    tsFile = unparsed.shift();
   }
   commandArgs.push(...unparsed);
-
-  const config = configParameter(yargArgs.config);
-
-  if (config && tsFile) {
-    console.error("specify a config file _or_ a tsFile. But not both", args);
-    return undefined;
-  }
 
   const parsedArgs: ParsedArguments = {
     config,

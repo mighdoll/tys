@@ -14,12 +14,6 @@ const testConfig = "test/test-config.tys.ts";
 
 // note: need to run 'yarn dist' first
 
-test("zztys cli with default config", async () => {
-  clearCache(testProgram);
-  const result = run(`node dist/tys`);
-  return result.should.eventually.equal(99);
-});
-
 test("run tys cli", async () => {
   clearCache(testProgram);
   const result = run(`node dist/tys ${testProgram} 3`); // run 'yarn dist' first
@@ -45,7 +39,7 @@ test("recursively run tys on tys launcher", () => {
   return result.should.eventually.equal(0);
 });
 
-test("gulptys --version", () => {
+test.skip("gulptys --version", () => {
   const dir = tmp.dirSync();
 });
 
