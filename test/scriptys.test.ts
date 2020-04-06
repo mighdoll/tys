@@ -6,6 +6,9 @@ import { defaultOutDir } from "config-file-ts";
 import rimraf from "rimraf";
 import { run } from "../src/execUtil";
 import tmp from "tmp";
+import { symLinkForce } from "config-file-ts";
+import path from "path";
+import fs from "fs";
 
 chai.use(chaiAsPromised);
 
@@ -39,8 +42,17 @@ test("recursively run tys on tys launcher", () => {
   return result.should.eventually.equal(0);
 });
 
-test.skip("gulptys --version", () => {
-  const dir = tmp.dirSync();
+test("gulptys --version", async () => {
+  const dir = tmp.dirSync({keep: true});
+  const gulptys = path.join(dir.name, "gulptys");
+  const tysPath = path.resolve("dist/tys.js");
+  symLinkForce(tysPath, gulptys);
+  fs.chmodSync(gulptys, 0o775);
+  const linkStat = fs.lstatSync(gulptys);
+  console.log("symbolic:", gulptys, linkStat.isSymbolicLink());
+  const result = run(`${gulptys} --version`);
+  return result;
+  // return result.then(() => dir.removeCallback());
 });
 
 function clearCache(...tsFiles: string[]): void {
