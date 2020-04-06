@@ -72,19 +72,15 @@ export function parseScriptysArgs(
 }
 
 /** Interpret arguments when launched as tys */
-function tysArguments(
-  args: string[]
-): ParsedArguments | undefined {
+function tysArguments(args: string[]): ParsedArguments | undefined {
   const [tysArgs, commandArgs] = splitAtDDash(args);
   const yargArgs = tysLocalArgs(tysArgs);
-  // console.log("yargArgs", yargArgs);
   const unparsed = yargArgs._.slice();
   const tsFile = unparsed.shift();
   if (unparsed.length) {
     console.error("unparsed command line argument:", unparsed);
     return undefined;
   }
-  // console.log("unparsed:", unparsed);
   commandArgs.push(...unparsed);
 
   const config = configParameter(yargArgs.config);
@@ -99,7 +95,6 @@ function tysArguments(
     tsFile,
     commandArgs
   };
-  // console.log("scriptys args", parsedArgs);
 
   return parsedArgs;
 }

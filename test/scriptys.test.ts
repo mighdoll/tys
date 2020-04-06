@@ -16,7 +16,7 @@ const testConfig = "test/test-config.tys.ts";
 
 test("tys cli with default config", async () => {
   clearCache(testProgram);
-  const result = run(`node dist/tys`); 
+  const result = run(`node dist/tys`);
   return result.should.eventually.equal(99);
 });
 
@@ -44,7 +44,6 @@ test("recursively run tys on tys launcher", () => {
   const result = run(`node dist/tys ${tysLauncherSrc} --version`);
   return result.should.eventually.equal(0);
 });
-
 
 function clearCache(...tsFiles: string[]): void {
   for (const tsFile of tsFiles) {
