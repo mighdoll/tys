@@ -5,7 +5,7 @@ import "chai/register-should";
 import { defaultOutDir } from "config-file-ts";
 import rimraf from "rimraf";
 import { run } from "../src/execUtil";
-import { scriptysCommandLine } from "../src/scriptys";
+import tmp from "tmp";
 
 chai.use(chaiAsPromised);
 
@@ -14,7 +14,7 @@ const testConfig = "test/test-config.tys.ts";
 
 // note: need to run 'yarn dist' first
 
-test("tys cli with default config", async () => {
+test("zztys cli with default config", async () => {
   clearCache(testProgram);
   const result = run(`node dist/tys`);
   return result.should.eventually.equal(99);
@@ -43,6 +43,10 @@ test("recursively run tys on tys launcher", () => {
   clearCache(tysLauncherSrc);
   const result = run(`node dist/tys ${tysLauncherSrc} --version`);
   return result.should.eventually.equal(0);
+});
+
+test("gulptys --version", () => {
+  const dir = tmp.dirSync();
 });
 
 function clearCache(...tsFiles: string[]): void {
