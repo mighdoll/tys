@@ -10,11 +10,11 @@ $ tys myScript.ts
 $ gulptys --tasks
 ```
 
-Many people prefer TypeScript to JavaScript to get better error checking, 
+TypeScript fans prefer TypeScript to JavaScript to get better error checking, 
 richer IDE support, etc. But TypeScript compilation takes a second or two
 and typically requires some build boilerplate. 
 
-Hopefully tys makes it easier to use TypeScript scripts for lightweight tasks
+Hopefully, tys makes it easier to use TypeScript scripts for lightweight tasks
 like build scripts.
 
 ### Alternatives to tys for running a TypeScript
@@ -25,14 +25,17 @@ caches compilation results externally.
 
 sucrase-node is faster than ts-node, but provides no type checking.
 
-### For .js/.ts config files
+### Add .ts config file support to an existing tool with .js config files 
 
 Tys can also compile and cache TypeScript configuration files for existing tools that 
 use .js configuration files.
 
-See [gulptys] for an example. (gulp supports .ts config files on its own, but 
-the gulptys wrapper is 4x faster.)
+See [gulptys](https://github.com/mighdoll/tys/blob/master/gulptys.config.ts) for an example. A gulptys symlink
+is installed when you install tys.
+(gulp also supports .ts config files on its own, 
+but the gulptys wrapper is 4x faster.)
 
+### Create a new tool with .ts config files
 See [config-file-ts](https://github.com/mighdoll/config-file-ts) to integrate caching TypeScript config files into tools you write.
 
 ## Install 
