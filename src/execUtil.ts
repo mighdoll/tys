@@ -1,8 +1,10 @@
-import { spawn, ChildProcess } from "child_process";
+import { exec, spawn, ChildProcess } from "child_process";
 import { once } from "events";
 import glob from "glob";
 import fs from "fs";
 import path from "path";
+import util from "util";
+const execPm = util.promisify(exec);
 
 /** Execute a command in subprocess
  *
@@ -37,7 +39,7 @@ function logger(possiblePrefix: string) {
   const prefix = possiblePrefix.length ? possiblePrefix + ": " : "";
   return (data: Buffer): void => {
     const lines = data.toString();
-    const lineArray = lines.split("\n").filter(line => line.length > 0);
+    const lineArray = lines.split("\n").filter((line) => line.length > 0);
     for (const line of lineArray) {
       console.log(`${prefix}${line}`);
     }
@@ -71,6 +73,28 @@ export async function run(cmdLine: string): Promise<number> {
   return promisedResult;
 }
 
+export interface ExecResult {
+  result: number;
+  stdout: string[];
+  stderr: string[];
+}
+
+/** Execute a command in a subprocess.
+ *
+ * @return a promise containing the return code of the command and the buffered
+ * results from stdio.
+ */
+export async function bufferedRun(cmdLine: string): Promise<ExecResult> {
+  let result = 0;
+  const { stdout, stderr } = await execPm(cmdLine).catch((e) => (result = e));
+
+  return {
+    result,
+    stdout,
+    stderr,
+  };
+}
+
 interface CommandParts {
   cmd: string;
   args: string[];
@@ -82,7 +106,7 @@ function splitCmdLine(cmdLine: string): CommandParts {
   const args = all.slice(1);
   return {
     cmd,
-    args
+    args,
   };
 }
 
@@ -106,7 +130,7 @@ export async function serialExec(...cmds: string[]): Promise<number> {
 
 /** return true if any files need compiling */
 export function needsCompile(srcGlobs: string[], outDir: string): boolean {
-  const files = srcGlobs.flatMap(src => glob.sync(src));
+  const files = srcGlobs.flatMap((src) => glob.sync(src));
   const srcDestPairs = compilationPairs(files, outDir);
   return anyOutDated(srcDestPairs);
 }
@@ -115,7 +139,7 @@ function compilationPairs(
   srcFiles: string[],
   outDir: string
 ): [string, string][] {
-  return srcFiles.map(file => {
+  return srcFiles.map((file) => {
     const outFile = changeSuffix(file, ".js");
     const outPath = path.join(outDir, outFile);
     return [file, outPath];

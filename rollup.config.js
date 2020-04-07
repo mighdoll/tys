@@ -18,6 +18,7 @@ export default [
       "child_process",
       "config-file-ts",
       "glob",
+      "util",
       "yargs"
     ]
   },
