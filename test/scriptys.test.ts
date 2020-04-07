@@ -4,7 +4,7 @@ import chaiAsPromised from "chai-as-promised";
 import "chai/register-should";
 import { defaultOutDir } from "config-file-ts";
 import rimraf from "rimraf";
-import { run } from "../src/execUtil";
+import { run, bufferedRun } from "../src/execUtil";
 import tmp from "tmp";
 import { symLinkForce } from "config-file-ts";
 import path from "path";
@@ -42,21 +42,24 @@ test("recursively run tys on tys launcher", () => {
   return result.should.eventually.equal(0);
 });
 
-test("gulptys --version", async () => {
+test("gulptys --help", async () => {
   const { dir, gulptys } = createGulptysLink();
-  // TODO capture and parse stdout in test
-  const result = run(`${gulptys} --version`);
-  const cleaned = result.then(code => {
-    dir.removeCallback();
-    return code;
-  });
-  return cleaned.should.eventually.equal(0);
+  const result = bufferedRun(`${gulptys} --help`);
+  const done = result
+    .then((execResult) => {
+      execResult.result.should.equal(0);
+      execResult.stdout.should.contain("Usage: gulp");
+      return execResult;
+    })
+    .finally(dir.removeCallback);
+  return done;
 });
 
 interface GulptysLink {
   dir: tmp.DirResult;
   gulptys: string;
 }
+
 function createGulptysLink(): GulptysLink {
   const dir = tmp.dirSync();
   const gulptys = path.join(dir.name, "gulptys");
