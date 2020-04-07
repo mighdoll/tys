@@ -1,5 +1,5 @@
 ## Tys
-Tys makes it fast to run short TypeScript scripts with full type checking 
+Tys runs TypeScript scripts with full type checking 
 and a persistent cache for speed. 
 
 ```bash
