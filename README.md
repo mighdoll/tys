@@ -13,9 +13,8 @@ $ gulptys --tasks
 TypeScript fans prefer TypeScript to JavaScript to get better error checking, 
 richer IDE support, etc. But TypeScript compilation takes a second or two
 and typically requires some build boilerplate. 
+Hopefully tys makes it easier to use TypeScript scripts for lightweight tasks.
 
-Hopefully, tys makes it easier to use TypeScript scripts for lightweight tasks
-like build scripts.
 
 ### Alternatives to tys for running a TypeScript
 
