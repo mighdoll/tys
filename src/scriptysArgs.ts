@@ -6,6 +6,7 @@ import {
 } from "config-file-ts";
 import glob from "glob";
 import path from "path";
+import fs from "fs";
 import yargs from "yargs";
 import TysConfig from "./TysConfig";
 
@@ -23,7 +24,7 @@ export function scriptysParams(args: string[]): ScriptysParams | undefined {
     return undefined;
   }
 
-  const config = getConfig(params);
+  const config = getConfiguration(params.config, params.tsFile);
   if (!config) {
     console.error("tys configuration not understood", args);
     return undefined;
@@ -170,10 +171,20 @@ function isLauncherArg(arg: string): boolean {
   return path.basename(arg).match(launcherArg) !== null;
 }
 
-function getConfig(params: ParsedArguments): TysConfig | undefined {
-  const { config, tsFile } = params;
+function getConfiguration(
+  config: string | undefined,
+  tsFile: string | undefined
+): TysConfig | undefined {
   if (config) {
-    return loadTsConfig<TysConfig>(config);
+    let configPath = config;
+    if (!fs.existsSync(config) && !path.isAbsolute(config)) {
+      configPath = path.join(__dirname, config);
+      if (!fs.existsSync(configPath)) {
+        console.log("config not found:", config, configPath);
+        return undefined;
+      }
+    }
+    return loadTsConfig<TysConfig>(configPath);
   } else if (tsFile) {
     return {
       tsFile
@@ -185,7 +196,7 @@ function getConfig(params: ParsedArguments): TysConfig | undefined {
 }
 
 export function stripLauncherArgs(argv: string[]): string[] {
-  if (isLauncherArg(argv[0])){
+  if (isLauncherArg(argv[0])) {
     return argv.slice(2);
   } else {
     return argv.slice(1);
