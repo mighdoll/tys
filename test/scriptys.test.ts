@@ -44,7 +44,7 @@ test("recursively run tys on tys launcher", () => {
 
 test("gulptys --help", async () => {
   const { dir, gulptys } = createGulptysLink();
-  const result = bufferedRun(`${gulptys} --help`);
+  const result = bufferedRun(`cd test; ${gulptys} --help`);
   const done = result
     .then((execResult) => {
       execResult.result.should.equal(0);

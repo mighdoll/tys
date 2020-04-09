@@ -1,0 +1,13 @@
+#!/usr/bin/env node
+"use strict";
+
+const fs = require("fs");
+const mustache = require("mustache");
+
+const src = fs.readFileSync("src/gulptys.mustache", "utf8");
+
+const distVersion = mustache.render(src, {tysModule:"tys"})
+fs.writeFileSync("dist/gulptys.config.ts", distVersion);
+
+const testVersion = mustache.render(src, {tysModule:"../src/scriptys"})
+fs.writeFileSync("test/gulptys.config.ts", testVersion);
