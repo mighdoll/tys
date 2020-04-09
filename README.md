@@ -2,17 +2,20 @@
 Tys runs TypeScript scripts with full type checking 
 and a persistent cache for speed. 
 
+Tys can also compile and cache TypeScript configuration files for existing tools that 
+use .js configuration files.
+
 ```bash
 # run a script
 $ tys myScript.ts
 
-# use TypeScript gulpfile.ts for gulp
+# use gulp with a TypeScript gulpfile.ts
 $ gulptys --tasks
 ```
 
 TypeScript fans prefer TypeScript to JavaScript to get better error checking, 
 richer IDE support, etc. But TypeScript compilation takes a second or two
-and typically requires some build boilerplate. 
+and requires some build boilerplate. 
 Hopefully tys makes it easier to use TypeScript scripts for lightweight tasks.
 
 
@@ -25,9 +28,6 @@ caches compilation results externally.
 sucrase-node is faster than ts-node, but provides no type checking.
 
 ### Add .ts config file support to an existing tool with .js config files 
-
-Tys can also compile and cache TypeScript configuration files for existing tools that 
-use .js configuration files.
 
 See [gulptys](https://github.com/mighdoll/tys/blob/master/gulptys.config.ts) for an example. A gulptys symlink
 is installed when you install tys.

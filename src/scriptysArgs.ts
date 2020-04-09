@@ -24,7 +24,7 @@ export function scriptysParams(args: string[]): ScriptysParams | undefined {
     return undefined;
   }
 
-  const config = getConfiguration(params.config, params.tsFile);
+  const config = getConfiguration(params);
   if (!config) {
     console.error("tys configuration not understood", args);
     return undefined;
@@ -56,6 +56,9 @@ export function scriptysParams(args: string[]): ScriptysParams | undefined {
 export interface ParsedArguments {
   config?: string;
   tsFile?: string;
+  otherTsFiles?: string[];
+  command?: string;
+  outDir?: string;
   commandArgs: string[];
 }
 
@@ -70,11 +73,10 @@ export function parseScriptysArgs(
 ): ParsedArguments | undefined {
   const rawLauncher = _launcher || yargs.parse("").$0;
   const launcher = path.basename(rawLauncher);
-  if (launcher !== "tys") {
-    return nonTysArguments(launcher, args);
+  if (launcher === "tys" || launcher === "tys.js") {
+    return tysArguments(args);
   }
-
-  return tysArguments(args);
+  return nonTysArguments(launcher, args);
 }
 
 /** Interpret arguments when launched as tys */
@@ -84,6 +86,7 @@ function tysArguments(args: string[]): ParsedArguments | undefined {
   const unparsed = yargArgs._.slice();
   const config = configParameter(yargArgs.config);
   let tsFile: string | undefined;
+  const { command, outDir, otherTsFiles} = yargArgs;
   if (!config) {
     tsFile = unparsed.shift();
   }
@@ -92,12 +95,18 @@ function tysArguments(args: string[]): ParsedArguments | undefined {
   const parsedArgs: ParsedArguments = {
     config,
     tsFile,
+    otherTsFiles,
+    outDir,
+    command,
     commandArgs
   };
 
   return parsedArgs;
 }
 
+/** When not launched as tys (e.g. as gulptys) arguments go directly to command
+ * and config file is based on name, e.g. gulptys.config.ts.
+ */
 function nonTysArguments(launcher: string, args: string[]): ParsedArguments {
   const config = launcher + ".config.ts";
   return {
@@ -117,10 +126,6 @@ function splitAtDDash(args: string[]): [string[], string[]] {
   return [args, []];
 }
 
-// TODO add option for command to run
-// TODO add option for src files
-// TODO add option for outDir
-
 function tysLocalArgs(args: string[]) {
   return yargs
     .option("config", {
@@ -128,11 +133,23 @@ function tysLocalArgs(args: string[]) {
       string: true,
       describe: "tys configuration file"
     })
-    .command("$ <tsFile..>", false)
+    .option("otherTsFiles", {
+      string: true,
+      array: true,
+      describe: "additional typescript files (glob syntax)"
+    })
+    .option("command", {
+      string: true,
+      describe: "command to run after compiling"
+    })
+    .option("outDir", {
+      string: true,
+      describe: "directory for compiled js files"
+    })
+    .help()
     .usage(
       "$0 tsFile \n$0 -c [tysConfigFile]\nsymLinkToTys   # uses symlinkToTys.config.ts as config"
     )
-    .help()
     .parse(args);
 }
 
@@ -171,10 +188,8 @@ function isLauncherArg(arg: string): boolean {
   return path.basename(arg).match(launcherArg) !== null;
 }
 
-function getConfiguration(
-  config: string | undefined,
-  tsFile: string | undefined
-): TysConfig | undefined {
+function getConfiguration(params: ParsedArguments): TysConfig | undefined {
+  const { config, tsFile, otherTsFiles , command, outDir } = params;
   if (config) {
     let configPath = config;
     if (!fs.existsSync(config) && !path.isAbsolute(config)) {
@@ -187,7 +202,10 @@ function getConfiguration(
     return loadTsConfig<TysConfig>(configPath);
   } else if (tsFile) {
     return {
-      tsFile
+      tsFile,
+      outDir,
+      command,
+      otherTsFiles
     };
   } else {
     console.error("no tsFile no config.tys.ts");
