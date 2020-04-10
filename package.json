@@ -1,6 +1,6 @@
 {
   "name": "tys",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "main": "dist/scriptys.js",
   "types": "dist/scriptys.d.ts",
   "description": "Run typescript scripts faster with cached compilation.",
