@@ -22,7 +22,7 @@
     "gulptys": "dist/tys.js"
   },
   "dependencies": {
-    "config-file-ts": "^0.1.7",
+    "config-file-ts": "^0.2.0",
     "glob": "^7.1.6",
     "yargs": "^15.3.1"
   },
@@ -33,6 +33,7 @@
     "@types/jest": "^25.1.4",
     "@types/mustache": "^4.0.1",
     "@types/node": "^13.9.8",
+    "@types/rimraf": "^3.0.0",
     "@types/tmp": "^0.1.0",
     "@types/yargs": "^15.0.4",
     "chai": "^4.2.0",

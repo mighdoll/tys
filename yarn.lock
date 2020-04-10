@@ -1224,12 +1224,11 @@ concat-stream@^1.6.0:
     readable-stream "^2.2.2"
     typedarray "^0.0.6"
 
-config-file-ts@^0.1.7:
-  version "0.1.7"
-  resolved "https://registry.yarnpkg.com/config-file-ts/-/config-file-ts-0.1.7.tgz#a00a9ba8373434ace3d2fc5bcc0c979b39cb3e18"
-  integrity sha512-lYcBf5zakgRM90KcepOdB7O9+lE/H19Ij5f87L8rLPReL8ZIh9qE/WHICmTAgh3JhIQ18r47qX4zgm7QSaiPtg==
+config-file-ts@^0.2.0:
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/config-file-ts/-/config-file-ts-0.2.0.tgz#b8732042164b03f9735c61e793474b6652ac5666"
+  integrity sha512-h2UASZ81GK71cTtjIDq0ZqWeLgl1iUXooBXDYRHgnIfocw47J7oVA66NKMy8ce8ppdkYjfAEaUqbJK9szkJDaA==
   dependencies:
-    "@types/rimraf" "^3.0.0"
     glob "^7.1.6"
     typescript "^3.8.3"
 
