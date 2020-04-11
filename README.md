@@ -5,10 +5,10 @@ and a persistent cache for speed.
 
 ```bash
 # run a script
-$ tys myScript.ts
+tys myScript.ts
 
 # use gulp with a TypeScript gulpfile.ts
-$ gulptys --tasks
+gulptys --tasks
 ```
 
 TypeScript fans prefer TypeScript to JavaScript to get better error checking, 
@@ -38,16 +38,16 @@ See [config-file-ts](https://github.com/mighdoll/config-file-ts) to integrate ca
 ## Install 
 ```bash
 # yarn project
-$ yarn add --dev tys
+yarn add --dev tys
 
 # npm project
-$ npm -i --dev tys
+npm -i --dev tys
 
 # general use via yarn
-$ yarn global add tys
+yarn global add tys
 
 # general use via npm
-$ npm -i -g tys
+npm -i -g tys
 ```
 
 ### Usage
