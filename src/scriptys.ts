@@ -10,7 +10,7 @@ import { run } from "./execUtil";
 import { scriptysParams, stripLauncherArgs, tysDefaultOutDir } from "./scriptysArgs";
 import TysConfig from "./TysConfig";
 
-export { TysConfig, run };
+export { TysConfig, run, stripLauncherArgs };
 
 /** Launch scriptys
  *
