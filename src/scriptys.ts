@@ -22,8 +22,8 @@ export { TysConfig, run, stripLauncherArgs };
  * @returns the result of the executed script
  */
 export async function scriptysArgv(argv: string[]): Promise<number> {
-  const args = stripLauncherArgs(argv);
-  return runScriptys(args);
+  const argvStripped = stripLauncherArgs(argv);
+  return runScriptys(argvStripped);
 }
 
 /** Launch scriptys
@@ -32,7 +32,7 @@ export async function scriptysArgv(argv: string[]): Promise<number> {
  */
 export async function scriptysCommandLine(cmdLine: string): Promise<number> {
   const args = cmdLine.split(/\s+/);
-  return runScriptys(args);
+  return runScriptys(["tys", ...args]);
 }
 
 /** @return the output path to a .js file compiled from a .ts file */

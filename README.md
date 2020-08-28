@@ -69,8 +69,9 @@ This is handy to compile a config file for an existing tool.
 * ```-c, --config [configFile] ```
 Specify tys options by default exporting a [TysConfig](src/TysConfig.ts) structure from a TypeScript file. 
 If ```-c``` is specified without an config file, 
-tys will look for a file named *tysconfig.ts* in the current directory and 
-the tys installation directory.
+tys will look for a file named *tysconfig.ts* in the current directory, 
+the directory containing a link to tys if tys was launched via a symlink.
+and the tys installation directory.
 * ```--outDir <directory> ```
 Directory in which to cache transpiled JavaScript output files. 
 Without this option, tys caches in *$HOME/.cache/tys*. 

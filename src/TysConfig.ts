@@ -3,7 +3,7 @@
  */
 export default interface TysConfig {
   /** typescript file to compile */
-  tsFile: string;
+  tsFile?: string;
 
   /** directory containing compiled js version of typescript files */
   outDir?: string;

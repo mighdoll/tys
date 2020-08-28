@@ -2,7 +2,7 @@ import {
   defaultOutDir,
   expectFilesExist,
   jsOutFile,
-  loadTsConfig
+  loadTsConfig,
 } from "config-file-ts";
 import glob from "glob";
 import path from "path";
@@ -20,17 +20,22 @@ export interface ScriptysParams {
 
 /** Parse and validate command line and config parameters */
 export function scriptysParams(args: string[]): ScriptysParams | undefined {
-  const params = parseScriptysArgs(args);
+  const params = parseArguments(args);
   if (!params) {
     return undefined;
   }
 
-  const config = getConfiguration(params);
+  const config = getConfiguration(params, args);
   if (!config) {
     console.error("tys configuration not understood", args);
     return undefined;
   }
+
   const { tsFile, strict, otherTsFiles, outDir, command } = config;
+  if (!tsFile) {
+    console.error("no tsFile specified on command line or in config file");
+    return undefined;
+  }
   const exist = expectFilesExist([tsFile]);
   if (!exist) {
     console.error(`scriptysParams: ${tsFile} not found`);
@@ -51,77 +56,64 @@ export function scriptysParams(args: string[]): ScriptysParams | undefined {
     strict,
     sources,
     realOutDir,
-    fullCommand
+    fullCommand,
   };
 }
 
-export interface ParsedArguments {
-  config?: string;
-  tsFile?: string;
-  otherTsFiles?: string[];
-  command?: string;
-  outDir?: string;
+export interface ParsedArguments extends TysConfig {
+  launcher: string;
+  explicitConfigFile?: string;
   commandArgs: string[];
-  strict?: boolean;
 }
 
-/**
- * Parse command line arguments for scriptys
+/** Parse command line arguments.
  * @param args command line argument array
- * @param _launcher  (for tests) override launch command name (normally argv[0])
+ * args[0] is assumed to be the launch program (e.g. tys or tys.js or a link to it)
  */
-export function parseScriptysArgs(
-  args: string[],
-  _launcher?: string
-): ParsedArguments | undefined {
-  const rawLauncher = _launcher || yargs.parse("").$0;
-  const launcher = path.basename(rawLauncher);
+export function parseArguments(args: string[]): ParsedArguments | undefined {
+  const launcher = path.basename(args[0]);
   if (launcher === "tys" || launcher === "tys.js") {
     return tysArguments(args);
+  } else { 
+    // symlinked launcher, pass all arguments to target
+    return {
+      launcher,
+      commandArgs: args.slice(1)
+    };
   }
-  return nonTysArguments(launcher, args);
 }
 
-/** Interpret arguments when launched as tys */
-function tysArguments(args: string[]): ParsedArguments | undefined {
-  const [tysArgs, commandArgs] = splitAtDDash(args);
+
+export function tysArguments(args: string[]): ParsedArguments {
+  const launcher = path.basename(args[0]);
+  const [tysArgs, commandArgs] = splitAtDDash(args.slice(1));
   const yargArgs = tysLocalArgs(tysArgs);
   const unparsed = yargArgs._.slice();
-  const config = configParameter(yargArgs.config);
+  const explicitConfigFile = configParameter(yargArgs.config);
   let tsFile: string | undefined;
-  const { strict, command, outDir, otherTsFiles} = yargArgs;
-  if (!config) {
+  const { strict, command, outDir, otherTsFiles } = yargArgs;
+  if (!explicitConfigFile) {
     tsFile = unparsed.shift();
   }
   commandArgs.push(...unparsed);
 
   const parsedArgs: ParsedArguments = {
-    config,
+    launcher,
+    explicitConfigFile,
     tsFile,
     otherTsFiles,
     outDir,
     command,
     strict,
-    commandArgs
+    commandArgs,
   };
 
   return parsedArgs;
 }
 
-/** When not launched as tys (e.g. as gulptys) arguments go directly to command
- * and config file is based on name, e.g. gulptys.config.ts.
- */
-function nonTysArguments(launcher: string, args: string[]): ParsedArguments {
-  const config = launcher + ".config.ts";
-  return {
-    config,
-    commandArgs: args
-  };
-}
-
 /** split a set of arguments before and after a "--"  */
 function splitAtDDash(args: string[]): [string[], string[]] {
-  const found = args.findIndex(s => s === "--");
+  const found = args.findIndex((s) => s === "--");
   if (found !== -1) {
     const before = args.slice(0, found);
     const after = args.slice(found + 1);
@@ -135,25 +127,25 @@ function tysLocalArgs(args: string[]) {
     .option("config", {
       alias: "c",
       string: true,
-      describe: "tys configuration file"
+      describe: "tys configuration file",
     })
     .option("otherTsFiles", {
       string: true,
       array: true,
-      describe: "additional typescript files (glob syntax)"
+      describe: "additional typescript files (glob syntax)",
     })
     .option("command", {
       string: true,
-      describe: "command to run after compiling"
+      describe: "command to run after compiling",
     })
     .option("strict", {
       boolean: true,
       default: true,
-      describe: "strict typescript compilation"
+      describe: "strict typescript compilation",
     })
     .option("outDir", {
       string: true,
-      describe: "directory for compiled js files"
+      describe: "directory for compiled js files",
     })
     .help()
     .usage(
@@ -197,40 +189,46 @@ function isLauncherArg(arg: string): boolean {
   return path.basename(arg).match(launcherArg) !== null;
 }
 
-function getConfiguration(params: ParsedArguments): TysConfig | undefined {
-  const { config, tsFile, otherTsFiles , strict, command, outDir } = params;
-  if (config) {
-    let configPath = config;
-    if (!fs.existsSync(config) && !path.isAbsolute(config)) {
-      configPath = path.join(__dirname, config);
-      if (!fs.existsSync(configPath)) {
-        console.log("config not found:", config, configPath);
-        return undefined;
-      }
-    }
-    return loadTsConfig<TysConfig>(configPath);
-  } else if (tsFile) {
-    return {
-      tsFile,
-      outDir,
-      command,
-      strict,
-      otherTsFiles
-    };
-  } else {
-    console.error("no tsFile no config.tys.ts");
-    return undefined;
+/** return configuration, either from config file or from command line arguments */
+function getConfiguration(
+  cmdLineConfig: ParsedArguments,
+  args: string[]
+): TysConfig {
+  const configFromFile = configFromConfigFile(cmdLineConfig, args);
+  return { ...cmdLineConfig, ...configFromFile };
+}
+
+function configFromConfigFile(
+  cmdLineConfig: ParsedArguments,
+  args: string[]
+): TysConfig {
+  const { launcher, explicitConfigFile } = cmdLineConfig;
+  if (explicitConfigFile) {
+    return loadIfExists(explicitConfigFile, true) || {};
   }
+  const defaultConfigFile = launcher + ".config.ts";
+  const curDirPath = path.join(__dirname, defaultConfigFile);
+  const scriptDirPath = path.join(path.dirname(args[0]), defaultConfigFile);
+  return loadIfExists(curDirPath) || loadIfExists(scriptDirPath) || {};
 }
 
 export function stripLauncherArgs(argv: string[]): string[] {
   if (isLauncherArg(argv[0])) {
-    return argv.slice(2);
-  } else {
     return argv.slice(1);
+  } else {
+    return argv;
   }
 }
 
 export function tysDefaultOutDir(tsFile: string): string {
   return defaultOutDir(path.resolve(tsFile), "tys");
+}
+
+function loadIfExists(configPath: string, warn = false): TysConfig | undefined {
+  if (fs.existsSync(configPath)) {
+    return loadTsConfig<TysConfig>(configPath);
+  }
+  if (warn) {
+    console.log("config not found:", path.basename(configPath));
+  }
 }
