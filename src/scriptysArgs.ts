@@ -12,6 +12,7 @@ import TysConfig from "./TysConfig";
 
 export interface ScriptysParams {
   tsFile: string;
+  strict?: boolean;
   sources: string[];
   realOutDir: string;
   fullCommand: string;
@@ -29,7 +30,7 @@ export function scriptysParams(args: string[]): ScriptysParams | undefined {
     console.error("tys configuration not understood", args);
     return undefined;
   }
-  const { tsFile, otherTsFiles, outDir, command } = config;
+  const { tsFile, strict, otherTsFiles, outDir, command } = config;
   const exist = expectFilesExist([tsFile]);
   if (!exist) {
     console.error(`scriptysParams: ${tsFile} not found`);
@@ -47,6 +48,7 @@ export function scriptysParams(args: string[]): ScriptysParams | undefined {
 
   return {
     tsFile,
+    strict,
     sources,
     realOutDir,
     fullCommand
@@ -60,6 +62,7 @@ export interface ParsedArguments {
   command?: string;
   outDir?: string;
   commandArgs: string[];
+  strict?: boolean;
 }
 
 /**
@@ -86,7 +89,7 @@ function tysArguments(args: string[]): ParsedArguments | undefined {
   const unparsed = yargArgs._.slice();
   const config = configParameter(yargArgs.config);
   let tsFile: string | undefined;
-  const { command, outDir, otherTsFiles} = yargArgs;
+  const { strict, command, outDir, otherTsFiles} = yargArgs;
   if (!config) {
     tsFile = unparsed.shift();
   }
@@ -98,6 +101,7 @@ function tysArguments(args: string[]): ParsedArguments | undefined {
     otherTsFiles,
     outDir,
     command,
+    strict,
     commandArgs
   };
 
@@ -141,6 +145,11 @@ function tysLocalArgs(args: string[]) {
     .option("command", {
       string: true,
       describe: "command to run after compiling"
+    })
+    .option("strict", {
+      boolean: true,
+      default: true,
+      describe: "strict typescript compilation"
     })
     .option("outDir", {
       string: true,
@@ -189,7 +198,7 @@ function isLauncherArg(arg: string): boolean {
 }
 
 function getConfiguration(params: ParsedArguments): TysConfig | undefined {
-  const { config, tsFile, otherTsFiles , command, outDir } = params;
+  const { config, tsFile, otherTsFiles , strict, command, outDir } = params;
   if (config) {
     let configPath = config;
     if (!fs.existsSync(config) && !path.isAbsolute(config)) {
@@ -205,6 +214,7 @@ function getConfiguration(params: ParsedArguments): TysConfig | undefined {
       tsFile,
       outDir,
       command,
+      strict,
       otherTsFiles
     };
   } else {

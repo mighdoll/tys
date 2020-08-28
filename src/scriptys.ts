@@ -7,7 +7,11 @@
 
 import { compileIfNecessary, jsOutFile } from "config-file-ts";
 import { run } from "./execUtil";
-import { scriptysParams, stripLauncherArgs, tysDefaultOutDir } from "./scriptysArgs";
+import {
+  scriptysParams,
+  stripLauncherArgs,
+  tysDefaultOutDir,
+} from "./scriptysArgs";
 import TysConfig from "./TysConfig";
 
 export { TysConfig, run, stripLauncherArgs };
@@ -47,9 +51,9 @@ export async function runScriptys(args: string[]): Promise<number> {
   if (!params) {
     return Promise.reject(`invalid scriptys parameters: ${args}`);
   }
-  const { sources, realOutDir, fullCommand } = params;
+  const { sources, realOutDir, fullCommand, strict } = params;
 
-  const built = compileIfNecessary(sources, realOutDir);
+  const built = compileIfNecessary(sources, realOutDir, strict);
   if (!built) {
     return Promise.resolve(-2);
   }
