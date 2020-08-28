@@ -38,7 +38,6 @@ test("recursively run tys on tys launcher", () => {
   return result.should.eventually.equal(0);
 });
 
-
 function clearCache(...tsFiles: string[]): void {
   for (const tsFile of tsFiles) {
     const outDir = defaultOutDir(tsFile);
