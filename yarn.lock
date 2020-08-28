@@ -1424,11 +1424,13 @@ concat-stream@^1.6.0:
     readable-stream "^2.2.2"
     typedarray "^0.0.6"
 
-"config-file-ts@file:.yalc/config-file-ts":
-  version "0.2.0"
+config-file-ts@^0.2.2:
+  version "0.2.2"
+  resolved "https://registry.yarnpkg.com/config-file-ts/-/config-file-ts-0.2.2.tgz#c1731c23a5306cb91fba2a775c0e0ffe65133192"
+  integrity sha512-j4NOiOoyVSvNvC5OB8AEql7sDTIDPuWhmfe/Z8cdd/rOhoxf9N5QsMfgVGixxoGw3Kk1xXsqx4yoKR+l06mvkQ==
   dependencies:
     glob "^7.1.6"
-    typescript "^3.8.3"
+    typescript "^4.0.2"
 
 convert-source-map@^1.4.0, convert-source-map@^1.5.0, convert-source-map@^1.6.0, convert-source-map@^1.7.0:
   version "1.7.0"
@@ -4827,11 +4829,6 @@ typedarray@^0.0.6:
   version "0.0.6"
   resolved "https://registry.yarnpkg.com/typedarray/-/typedarray-0.0.6.tgz#867ac74e3864187b1d3d47d996a78ec5c8830777"
   integrity sha1-hnrHTjhkGHsdPUfZlqeOxciDB3c=
-
-typescript@^3.8.3:
-  version "3.8.3"
-  resolved "https://registry.yarnpkg.com/typescript/-/typescript-3.8.3.tgz#409eb8544ea0335711205869ec458ab109ee1061"
-  integrity sha512-MYlEfn5VrLNsgudQTVJeNaQFUAI7DkhnOjdpAp4T+ku1TfQClewlbSuTVHiA+8skNBgaf02TL/kLOvig4y3G8w==
 
 typescript@^4.0.2:
   version "4.0.2"

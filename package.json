@@ -22,7 +22,7 @@
     "gulptys": "dist/tys.js"
   },
   "dependencies": {
-    "config-file-ts": "file:.yalc/config-file-ts",
+    "config-file-ts": "^0.2.2",
     "glob": "^7.1.6",
     "yargs": "^15.4.1"
   },
