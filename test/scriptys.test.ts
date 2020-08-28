@@ -51,7 +51,7 @@ test("gulptys --help", async () => {
       execResult.stdout.should.contain("Usage: gulp");
       return execResult;
     })
-    .finally(dir.removeCallback);
+    .finally(() => rimraf.sync(dir.name));
   return done;
 });
 
