@@ -12,6 +12,7 @@ import {
   stripLauncherArgs,
   tysDefaultOutDir,
 } from "./scriptysArgs";
+import { findImports } from "./findImports";
 import TysConfig from "./TysConfig";
 
 export { TysConfig, run, stripLauncherArgs };
@@ -52,6 +53,8 @@ export async function runScriptys(args: string[]): Promise<number> {
     return Promise.reject(`invalid scriptys parameters: ${args}`);
   }
   const { sources, realOutDir, fullCommand, strict } = params;
+  // const imports = await findImports(sources[0]);
+  // console.log({ imports });
 
   const built = compileIfNecessary(sources, realOutDir, strict);
   if (!built) {
