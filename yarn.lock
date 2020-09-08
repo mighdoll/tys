@@ -1424,10 +1424,10 @@ concat-stream@^1.6.0:
     readable-stream "^2.2.2"
     typedarray "^0.0.6"
 
-config-file-ts@^0.2.3:
-  version "0.2.3"
-  resolved "https://registry.yarnpkg.com/config-file-ts/-/config-file-ts-0.2.3.tgz#64e440caba0f52a935c1f6a6ea0046e7b0e20558"
-  integrity sha512-7+SKUUWYCHSKAuRWsyqOz/rr5N7SrRSvH2Kqkh+T/99gZMsEohkxqugv8KNemtmMfjcGb//6eUv5LAElRLzkfQ==
+config-file-ts@^0.2.4:
+  version "0.2.4"
+  resolved "https://registry.yarnpkg.com/config-file-ts/-/config-file-ts-0.2.4.tgz#6c0741fbe118a7cf786c65f139030f0448a2cc99"
+  integrity sha512-cKSW0BfrSaAUnxpgvpXPLaaW/umg4bqg4k3GO1JqlRfpx+d5W0GDXznCMkWotJQek5Mmz1MJVChQnz3IVaeMZQ==
   dependencies:
     glob "^7.1.6"
     typescript "^4.0.2"
